@@ -1,0 +1,80 @@
+{
+  "Jwt": {
+    "exp": 3,
+    "iss": "cored",
+    "sub": "cored",
+    "secret": "cored"
+  },
+  "Cache": {
+    "use_ssl": false,
+    "access_id": "minio_admin",
+    "end_point": "10.10.1.40:9000",
+    "secret_accessKey": "9ijnBHU*@123",
+    "expire": 3
+  },
+  "Store": {
+    "use_ssl": false,
+    "access_id": "minio_admin",
+    "end_point": "10.10.1.40:9000",
+    "secret_accessKey": "9ijnBHU*@123",
+    "expire": 3
+  },
+  "Backup": {
+    "addr": "http://10.10.254.11:5001"
+  },
+  "Logging": {
+    "file": "logs/cored.log",
+    "level": "debug",
+    "max_age": 30,
+    "max_size": 10,
+    "max_backups": 5
+  },
+  "Db": {
+    "host": "10.10.254.13",
+    "name": "te",
+    "port": 3307,
+    "user": "root",
+    "password": "9ijnBHU*@123"
+  },
+  "WaterServer": {
+    "grid": "security/grid",
+    "first": "security/l1",
+    "plain": "security/plain",
+    "third": "security/l3",
+    "protocol": "http",
+    "end_point": "123.60.56.112:9001",
+    "generate_stamps": "stamp/circle/create",
+    "stamp_circle_extract": "stamp/circle/extract",
+    "stamp_elipse_extract": "stamp/elipse/extract",
+    "generate_stamp_elipse": "stamp/elipse/create",
+    "generate_bs_water_mark": "screenBS",
+    "weak_water_mark_insert": "weak",
+    "weak_water_mark_extract": "weak/extract",
+    "electronic_watermark_bright": "flow/plain",
+    "electronic_watermark_underflow": "flow",
+    "electronic_watermark_underflow_extract": "flow/extract"
+  },
+  "ManageServer": {
+    "ListenIP": "0.0.0.0",
+    "ListenPort": 6000
+  },
+  "DRServer": {
+    "delData": "delData",
+    "encrypt": "encrypt",
+    "endPoint": "https://sqwalletapi.smartdatachain.com",
+    "uploadData": "uploadData",
+    "drUserCreate": "drUserCreate",
+    "drUserModify": "drUserModify",
+    "drAccountInfo": "drAccountInfo",
+    "drAccountSync": "drAccountSync",
+    "getDrUserInfo": "getDrUserInfo",
+    "authentication": "authentication",
+    "selectUploadData": "selectUploadData"
+  },
+  "APIServer": {
+    "KeyFile": "x",
+    "CertFile": "",
+    "EnableTLS": false,
+    "ListenAddress": "0.0.0.0:8080"
+  }
+}
