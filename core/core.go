@@ -18,6 +18,7 @@ type Server interface {
 type Core struct {
 	servers map[string]Server
 	wg      sync.WaitGroup
+	
 }
 
 func New() *Core {
@@ -67,4 +68,9 @@ func (c *Core) Close() error {
 
 func (c *Core) Wait() {
 	c.wg.Wait()
+}
+
+func (c *Core) Register() {
+	// register
+	publicKey := c.
 }
