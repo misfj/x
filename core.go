@@ -28,17 +28,13 @@ var initCmd = &cobra.Command{
 	Short: "Initialize the core service",
 	Long:  `generate publicKey and privateKey,please protect your  privateKey`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// x()
-		// 在这里添加初始化服务的代码
 	},
 }
 var coredCmd = &cobra.Command{
 	Use:   "cored",
 	Short: "cored is the core service of super nodes and cloud platforms",
 	Run: func(cmd *cobra.Command, args []string) {
-		//cfgFile := "x.json"
-		// fmt.Println(configFile)
-		// fmt.Println(nodeMode)
+
 		utils.CheckAndCreateFiles("public.pub", "private.key")
 		//初始化日志
 		config.Init(configFile)
@@ -68,6 +64,7 @@ var coredCmd = &cobra.Command{
 		}
 
 		ctx, cancel := context.WithCancel(context.Background())
+
 		server.Run(ctx)
 
 		// 处理SIGINT和SIGTERM信号

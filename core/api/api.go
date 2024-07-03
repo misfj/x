@@ -4,6 +4,7 @@ import (
 	"context"
 	"coredx/config"
 	"coredx/core/api/middware"
+	"coredx/core/node"
 	"coredx/log"
 	"crypto/md5"
 	"encoding/hex"
@@ -50,6 +51,7 @@ func New(config *config.APIServer) *Server {
 }
 
 func (s *Server) Init() error {
+	node.NewGlobalNodes()
 	s.initRoute()
 
 	return nil

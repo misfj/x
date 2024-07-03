@@ -2,7 +2,6 @@ package db
 
 import (
 	"coredx/config"
-	v1 "coredx/db/model/v1"
 	"fmt"
 	"os"
 
@@ -24,7 +23,7 @@ func Init(conf *config.Db) {
 		os.Exit(1)
 		return
 	}
-	err = GDB.AutoMigrate(&v1.UserInfo{})
+	err = GDB.AutoMigrate()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

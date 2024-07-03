@@ -16,13 +16,11 @@ type IPFS struct {
 	listenAddr string
 	httpClient *resty.Client
 	peers      []string
-	//peerMap    map[string]PeerInfo
-	//pwd        string
 }
 
 func Init(conf *config.BackUp) error {
 	client := resty.New()
-	client.SetTimeout(time.Second * 60 * 3)
+	client.SetTimeout(time.Second * 10)
 	ipfs = &IPFS{
 		listenAddr: conf.Addr,
 		httpClient: client,

@@ -4,6 +4,7 @@ import (
 	"context"
 	"coredx/config"
 	"coredx/core/api"
+	"coredx/core/node"
 	"coredx/log"
 	"sync"
 )
@@ -18,7 +19,6 @@ type Server interface {
 type Core struct {
 	servers map[string]Server
 	wg      sync.WaitGroup
-	
 }
 
 func New() *Core {
@@ -26,7 +26,9 @@ func New() *Core {
 		servers: make(map[string]Server),
 	}
 	apiServer := api.New(config.APIConfig())
+	vnodeServer := node.NewVNodeServer(config.APIConfig().ListenAddress)
 	c.servers[apiServer.Name()] = apiServer
+	c.servers[vnodeServer.Name()] = vnodeServer
 	return &c
 }
 func (c *Core) Init() (err error) {
@@ -53,6 +55,7 @@ func (c *Core) Run(ctx context.Context) {
 		c.wg.Add(1)
 
 		go func(serv Server, wg *sync.WaitGroup) {
+
 			serv.Startup(ctx)
 			serv.Close()
 			wg.Done()
@@ -68,9 +71,4 @@ func (c *Core) Close() error {
 
 func (c *Core) Wait() {
 	c.wg.Wait()
-}
-
-func (c *Core) Register() {
-	// register
-	publicKey := c.
 }
