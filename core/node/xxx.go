@@ -9,8 +9,9 @@ import (
 
 func NewWrapWsConn(conn *websocket.Conn, interval int) *WrapWsConn {
 	return &WrapWsConn{
-		Conn:     conn,
-		internal: interval,
+		Conn:                  conn,
+		internal:              interval,
+		LatestHealthyDeadline: time.Now().Add(time.Duration(interval) * time.Second),
 	}
 }
 func (w *WrapWsConn) FlushDeadLine() {
@@ -20,10 +21,19 @@ func (w *WrapWsConn) FlushDeadLine() {
 			return
 		}
 	}()
-	err := w.Conn.SetReadDeadline(time.Now().Add(time.Duration(w.internal) * time.Second))
-	if err != nil {
-		log.Errorf("超级大错误,请联系超级节点负责人:%v", err)
-		return
+	log.Debugf("客户端剩余到期时间:%v", w.LatestHealthyDeadline.Sub(time.Now()))
+	if w.LatestHealthyDeadline.Sub(time.Now()) < time.Second*20 {
+		log.Debug("这个分支s")
+		deadline := w.LatestHealthyDeadline.Add(time.Duration(w.internal) * time.Second)
+		err := w.Conn.SetReadDeadline(deadline)
+		if err != nil {
+			log.Error(err)
+			return
+		}
+		w.LatestHealthyDeadline = deadline
+		log.Debugf("客户端剩余到期时间XXXX:%v", w.LatestHealthyDeadline.Sub(time.Now()))
+	} else {
+		log.Debug("粉煤灰")
 	}
 }
 
@@ -34,7 +44,8 @@ type WrapWsConn struct {
 	NodeID   string
 	NodeName string
 	//保活时间
-	internal int
+	internal              int
+	LatestHealthyDeadline time.Time
 }
 
 func (w *WrapWsConn) Write(typ int, p []byte) {
@@ -51,63 +62,3 @@ func (w *WrapWsConn) Write(typ int, p []byte) {
 		log.Error(err)
 	}
 }
-
-// NodeService func Establish(w http.ResponseWriter, r *http.Request) {
-//func NodeService(ctx *gin.Context) {
-//	upgrader := websocket.Upgrader{
-//		CheckOrigin: func(r *http.Request) bool {
-//			return true // 允许所有CORS请求，实际使用时应该更严格
-//		},
-//		ReadBufferSize:   4096,
-//		WriteBufferSize:  4096,
-//		HandshakeTimeout: 30 * time.Second,
-//	}
-//	c, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
-//	if err != nil {
-//		log.Error(err)
-//		return
-//	}
-//	wrapConn := NewWrapWsConn(c, 30)
-//	wrapConn.FlushDeadLine()
-//	handleNode(wrapConn)
-//}
-
-//func handleNode(wrap *WrapWsConn) {
-//	for {
-//
-//		_, p, err := wrap.Conn.ReadMessage()
-//		if err != nil {
-//			GlobalNodes.ClearOfflineNode(wrap.NodeName)
-//			log.Error(err)
-//			return
-//		}
-//		log.Debugf("read ws msg:%s", string(p))
-//		cmd, err := utils.ExtractCmdValue(string(p))
-//		if err != nil {
-//			log.Error(err)
-//			continue
-//		}
-//		remoteIP := wrap.Conn.RemoteAddr().String()
-//		switch cmd {
-//		case protocol.CMD_NODE_LOGIN_REQ:
-//			req, login, err := handler.Login(p, remoteIP)
-//			if err != nil {
-//				log.Error(err)
-//				continue
-//			}
-//			wrap.Write(websocket.TextMessage, login)
-//			//登录成功之后将信息保存到全局的超级节点map当中
-//			wrap.NodeID = req.NodeID
-//			wrap.NodeName = req.NodeName
-//			GlobalNodes.AddOnlineNodeInfo(req)
-//		case protocol.CMD_NODE_HEALTHY_REQ:
-//			//todo 使用平台数据库的私钥进行验签,验签不通过就断开连接,节点进行公私钥检查
-//			//刷新到期时间
-//			wrap.FlushDeadLine()
-//
-//			//todo 后续业务
-//
-//		}
-//
-//	}
-//}

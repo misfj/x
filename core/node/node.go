@@ -92,7 +92,7 @@ func (v *VNodeServer) Startup(ctx context.Context) (err error) {
 			case <-timer.C:
 				dirty := `{"command":"Dirty"}`
 				err = c.WriteMessage(websocket.TextMessage, []byte(dirty))
-				timer.Reset(time.Second * 5)
+				timer.Reset(time.Second * 2)
 
 			}
 
@@ -121,11 +121,12 @@ func (v *VNodeServer) Startup(ctx context.Context) (err error) {
 		//为了不协程泄露和严格控制退出速度,下级节点5s发一个与业务无关的消息
 		switch cmd {
 		case protocol.CMD_NODE_DIRTY_RES:
-			err := wrapConn.Conn.SetReadDeadline(time.Now().Add(time.Second * 30))
-			if err != nil {
-				log.Error(err)
-			}
-			log.Debugf("ws client read time deadline:%s", time.Now().Add(time.Second*30).String())
+
+			wrapConn.FlushDeadLine()
+			//if err != nil {
+			//	log.Error(err)
+			//}
+			log.Debugf("ws client read time deadline:%s", wrapConn.LatestHealthyDeadline)
 		}
 
 	}
