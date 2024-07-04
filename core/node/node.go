@@ -110,6 +110,7 @@ func (v *VNodeServer) Startup(ctx context.Context) (err error) {
 		_, p, err := wrapConn.Conn.ReadMessage()
 		if err != nil {
 			log.Error(err)
+			log.Debugf("客户端断开的最近更新时间:%v", wrapConn.LatestHealthyTime)
 			break
 		}
 		log.Debugf("ws client read ws msg:%s", string(p))
@@ -123,10 +124,12 @@ func (v *VNodeServer) Startup(ctx context.Context) (err error) {
 		case protocol.CMD_NODE_DIRTY_RES:
 
 			wrapConn.FlushDeadLine()
+			//err := wrapConn.Conn.SetReadDeadline(time.Now().Add(time.Second * 30))
 			//if err != nil {
 			//	log.Error(err)
 			//}
-			log.Debugf("ws client read time deadline:%s", wrapConn.LatestHealthyDeadline)
+			//log.Debugf("ws client read time deadline:%s", time.Now().Add(time.Second*30).String())
+
 		}
 
 	}

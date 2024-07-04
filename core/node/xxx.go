@@ -9,9 +9,10 @@ import (
 
 func NewWrapWsConn(conn *websocket.Conn, interval int) *WrapWsConn {
 	return &WrapWsConn{
-		Conn:                  conn,
-		internal:              interval,
-		LatestHealthyDeadline: time.Now().Add(time.Duration(interval) * time.Second),
+
+		Conn:              conn,
+		internal:          interval,
+		LatestHealthyTime: time.Now().Add(time.Duration(interval) * time.Second),
 	}
 }
 func (w *WrapWsConn) FlushDeadLine() {
@@ -21,20 +22,28 @@ func (w *WrapWsConn) FlushDeadLine() {
 			return
 		}
 	}()
-	log.Debugf("客户端剩余到期时间:%v", w.LatestHealthyDeadline.Sub(time.Now()))
-	if w.LatestHealthyDeadline.Sub(time.Now()) < time.Second*20 {
-		log.Debug("这个分支s")
-		deadline := w.LatestHealthyDeadline.Add(time.Duration(w.internal) * time.Second)
-		err := w.Conn.SetReadDeadline(deadline)
+
+	log.Debugf("客户端剩余时间:%v", w.LatestHealthyTime.Sub(time.Now()))
+	if w.LatestHealthyTime.Sub(time.Now()) < time.Second*20 {
+		log.Debug("保活时间小于20s")
+		newt := w.LatestHealthyTime.Add(time.Duration(w.internal) * time.Second)
+		err := w.Conn.SetReadDeadline(w.LatestHealthyTime.Add(time.Duration(w.internal) * time.Second))
+
 		if err != nil {
 			log.Error(err)
 			return
 		}
-		w.LatestHealthyDeadline = deadline
-		log.Debugf("客户端剩余到期时间XXXX:%v", w.LatestHealthyDeadline.Sub(time.Now()))
+
+		w.LatestHealthyTime = newt
+		log.Debugf("客户端增加之后的时间:%v", newt)
 	} else {
-		log.Debug("粉煤灰")
+
 	}
+	//err := w.Conn.SetReadDeadline(time.Now().Add(time.Duration(w.internal) * time.Second))
+	//if err != nil {
+	//	log.Errorf("超级大错误,请联系超级节点负责人:%v", err)
+	//	return
+	//}
 }
 
 type WrapWsConn struct {
@@ -44,8 +53,9 @@ type WrapWsConn struct {
 	NodeID   string
 	NodeName string
 	//保活时间
-	internal              int
-	LatestHealthyDeadline time.Time
+
+	internal          int
+	LatestHealthyTime time.Time
 }
 
 func (w *WrapWsConn) Write(typ int, p []byte) {
