@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"log"
@@ -17,6 +18,32 @@ import (
 func MD5(data []byte) string {
 	hash := md5.Sum(data)
 	return hex.EncodeToString(hash[:])
+}
+func IslegalError(public string, private string) error {
+	msg := "cored is the core service of super nodes and cloud platforms"
+	//验证加密
+	cipherText, err := rsa.RsaEncryptToBase64([]byte(msg), public)
+	if err != nil {
+		return err
+	}
+	plainText, err := rsa.RsaDecryptByBase64(cipherText, private)
+	if err != nil {
+		return err
+	}
+	if !strings.EqualFold(msg, string(plainText)) {
+		return err
+	}
+	//验证签名
+	sign, err := rsa.RsaSignBase64([]byte(msg), private)
+	if err != nil {
+		return err
+	}
+	b := rsa.RsaVerifySignBase64([]byte(msg), sign, public)
+	if !b {
+		return errors.New("verify error")
+	}
+
+	return nil
 }
 
 // 检查当前目录下的公私钥是否合法

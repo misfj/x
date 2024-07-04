@@ -1,20 +1,21 @@
 package api
 
 import (
+	"coredx/core/api/middware"
 	"coredx/core/api/service"
 	"coredx/core/api/ws"
 )
 
 func (s *Server) initRoute() {
-	s.eng.POST("/v1/user/register", service.Register)
-	s.eng.Group("/v1/users")
-	//s.eng.POST("data/rate", func(c *gin.Context) {
-	//	c.JSON(200, gin.H{"code": 200})
-	//})
-	////第三方应用接口,登录单独开了个group
-	//lgroup := s.eng.Group("/api")
-	//s.eng.GET("node/info/register")
 	s.eng.GET("/api/v1/node/1", ws.NodeService)
+	s.eng.POST("/v1/user/register", service.Register)
+	s.eng.POST("/v1/user/login", service.Login)
+	userGroup := s.eng.Group("/v1/user/")
+	userGroup.Use(middware.Access())
+	userGroup.POST("/modify", service.Modify)
+	userGroup.POST("/test", service.Test)
+	//userGroup := s.eng.Group("/v1/user")
+	//userGroup.POST("/login")
 	//s.eng.POST("api/login", service.LoginService)
 	//authGroup := s.eng.Group("/api/v1")
 	//authGroup.Use(middware.Limit(), middware.Token())

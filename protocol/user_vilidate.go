@@ -1,6 +1,7 @@
 package protocol
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 )
@@ -15,8 +16,9 @@ func (r *RegisterRequest) Validate() error {
 		r.Username = fmt.Sprintf("%s:%d", "username", int31n)
 	}
 	if r.Password == "" {
-		int31n := rand.Int31n(9999)
-		r.Password = fmt.Sprintf("%s:%d", "password", int31n)
+		//int31n := rand.Int31n(9999)
+		//r.Password = fmt.Sprintf("%s:%d", "password", int31n)
+		r.Password = "123456"
 	}
 	if r.Phone == "" {
 		int31n := rand.Int31n(9999)
@@ -43,5 +45,15 @@ func (r *RegisterRequest) Validate() error {
 	if r.UserSourceID == "" {
 		r.UserSourceID = "1"
 	}
+	return nil
+}
+func (r *LoginRequest) Validate() error {
+	if r.NickName == "" || r.Password == "" {
+		return errors.New("nick_name or  password can not be empty")
+	}
+	return nil
+}
+
+func (r *ModifyRequest) Validate() error {
 	return nil
 }

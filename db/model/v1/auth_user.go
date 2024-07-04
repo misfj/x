@@ -2,6 +2,7 @@ package v1
 
 import (
 	"coredx/utils"
+	"errors"
 	"fmt"
 	"gorm.io/gorm"
 	"math/rand/v2"
@@ -35,13 +36,14 @@ func (m *AuthUser) TableName() string {
 }
 func AuthUserCreate(db *gorm.DB,
 	nickName string, userName string,
-	password string, phone string, PhoneType string, email string, idCard string, bankType string, bankNum string, userSourceID string) error {
+	password string, phone string, PhoneType string, email string, idCard string,
+	bankType string, bankNum string, userSourceID string) (uint64, error) {
 	var authUser AuthUser
 	authUser.CreateTime = time.Now()
 	authUser.UpdateTime = time.Now()
-	authUser.IsDelete = "0"
-	authUser.Remark = ""
-	authUser.Status = "正常"
+	authUser.IsDelete = notDelete
+	authUser.Remark = nullRemark
+	authUser.Status = AuthUserNormalStatus
 	authUser.NickName = nickName
 	authUser.UserName = userName
 	authUser.Password = password
@@ -55,5 +57,64 @@ func AuthUserCreate(db *gorm.DB,
 	rand := rand.Int32()
 	authUser.Did = fmt.Sprintf("did:%d", rand)
 	authUser.AuthTime = utils.TimeParse()
-	return db.Model(AuthUser{}).Create(&authUser).Error
+	tx := db.Model(AuthUser{}).Create(&authUser)
+	if tx.Error != nil {
+		return 0, tx.Error
+	}
+	tx = db.Model(AuthUser{}).Where("nick_name =?", nickName).First(&authUser)
+	if tx.Error != nil {
+		return 0, tx.Error
+	}
+	return authUser.Id, nil
+}
+func AuthUserVerifyByNickNameAndPassword(db *gorm.DB, nickName, password string) (uint64, error) {
+	var authUser AuthUser
+	tx := db.Model(AuthUser{}).Where("nick_name =? and is_delete = ?", nickName, notDelete).First(&authUser)
+	if tx.Error != nil {
+		return 0, tx.Error
+	}
+	x := utils.BcryptVerify(authUser.Password, password)
+	if x {
+		return authUser.Id, nil
+	}
+	return 0, errors.New("password error")
+}
+
+func AuthUserModifyByUserId(db *gorm.DB,
+	phoneType string,
+	PhoneNum string,
+	Email string,
+	Password string,
+	IdCard string,
+	BankType string,
+	BankNum string,
+	nickName string,
+	userID uint64) error {
+	var authUser AuthUser
+	if phoneType != "" {
+		authUser.PhoneTyp = phoneType
+	}
+	if PhoneNum != "" {
+		authUser.PhoneNum = PhoneNum
+	}
+	if Email != "" {
+		authUser.Email = Email
+	}
+	if Password != "" {
+		bcrypt := utils.Bcrypt(Password)
+		authUser.Password = bcrypt
+	}
+	if IdCard != "" {
+		authUser.IdCard = IdCard
+	}
+	if BankType != "" {
+		authUser.BankType = BankType
+	}
+	if BankNum != "" {
+		authUser.BankNum = BankNum
+	}
+	if nickName != "" {
+		authUser.NickName = nickName
+	}
+	return db.Model(AuthUser{}).Where("id =? and is_delete =?", userID, notDelete).Updates(&authUser).Error
 }

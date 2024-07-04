@@ -75,6 +75,13 @@ func (v *VNodeServer) Startup(ctx context.Context) (err error) {
 	}
 	log.Debugf("连接平台核心服务器成功:%s 平台地址:%s\n", conn.RemoteAddr().String(), v.platNodeAddr)
 	wrapConn := NewWrapWsConn(conn, 20)
+	defer func() {
+		//连接断开,预防panic
+		if err := recover(); err != nil {
+			log.Error(err)
+			return
+		}
+	}()
 	go func(c *websocket.Conn) {
 		timer := time.NewTimer(time.Second * 5)
 		defer c.Close()
@@ -99,7 +106,6 @@ func (v *VNodeServer) Startup(ctx context.Context) (err error) {
 		}
 	}(wrapConn.Conn)
 	for {
-		log.Debug("back")
 		//检验是否外部cancel
 		if v.ctx.Err() != nil {
 			fmt.Println("VNodeServer exit")
@@ -107,6 +113,7 @@ func (v *VNodeServer) Startup(ctx context.Context) (err error) {
 		}
 		//err := wrapConn.Conn.SetReadDeadline(time.Now().Add(time.Second * 60))
 		//log.Error(err)
+
 		_, p, err := wrapConn.Conn.ReadMessage()
 		if err != nil {
 			log.Error(err)
@@ -124,11 +131,6 @@ func (v *VNodeServer) Startup(ctx context.Context) (err error) {
 		case protocol.CMD_NODE_DIRTY_RES:
 
 			wrapConn.FlushDeadLine()
-			//err := wrapConn.Conn.SetReadDeadline(time.Now().Add(time.Second * 30))
-			//if err != nil {
-			//	log.Error(err)
-			//}
-			//log.Debugf("ws client read time deadline:%s", time.Now().Add(time.Second*30).String())
 
 		}
 

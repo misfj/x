@@ -40,11 +40,12 @@ type Cache struct {
 	Expire    uint8  `json:"expire"`
 }
 type Store struct {
-	EndPoint  string `json:"end_point"`
-	UseSSL    bool   `json:"use_ssl"`
-	AccessID  string `json:"access_id"`
-	SecretKey string `json:"secret_key"`
-	Expire    uint8  `json:"expire"`
+	EndPoint    string `json:"end_point"`
+	UseSSL      bool   `json:"use_ssl"`
+	AccessID    string `json:"access_id"`
+	SecretKey   string `json:"secret_key"`
+	Expire      uint8  `json:"expire"`
+	DefaultSize int64  `json:"default_size"`
 }
 type BackUp struct {
 	Addr string `json:"addr"`

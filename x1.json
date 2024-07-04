@@ -1,6 +1,6 @@
 {
   "Jwt": {
-    "exp": 3,
+    "exp": 90,
     "iss": "cored",
     "sub": "cored",
     "secret": "cored"
@@ -17,7 +17,8 @@
     "access_id": "minio_admin",
     "end_point": "10.10.1.40:9000",
     "secret_accessKey": "9ijnBHU*@123",
-    "expire": 3
+    "expire": 3,
+    "default_size": 500
   },
   "Backup": {
     "addr": "http://10.10.254.11:5001"
