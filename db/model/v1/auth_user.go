@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"gorm.io/gorm"
 	"math/rand/v2"
+	"strconv"
 	"time"
 )
 
@@ -43,7 +44,8 @@ func AuthUserCreate(db *gorm.DB,
 	authUser.UpdateTime = time.Now()
 	authUser.IsDelete = notDelete
 	authUser.Remark = nullRemark
-	authUser.Status = AuthUserNormalStatus
+	AuthUserNormalStatusInt := strconv.Itoa(AuthUserNormalStatus)
+	authUser.Status = AuthUserNormalStatusInt
 	authUser.NickName = nickName
 	authUser.UserName = userName
 	authUser.Password = password
@@ -116,5 +118,19 @@ func AuthUserModifyByUserId(db *gorm.DB,
 	if nickName != "" {
 		authUser.NickName = nickName
 	}
-	return db.Model(AuthUser{}).Where("id =? and is_delete =?", userID, notDelete).Updates(&authUser).Error
+	tx := db.Model(AuthUser{}).Where("nick_name =?", nickName).First(&authUser)
+	if tx.Error != nil {
+		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			return db.Model(AuthUser{}).Where("id =? and is_delete =?", userID, notDelete).Updates(&authUser).Error
+		} else {
+			return tx.Error
+		}
+	} else {
+		return errors.New("nick_name exist,please choose a new name")
+	}
+	//return db.Model(AuthUser{}).Where("id =? and is_delete =?", userID, notDelete).Updates(&authUser).Error
+}
+func AuthUserDeleteByUserId(db *gorm.DB, userID uint64) error {
+	return db.Model(AuthUser{}).Where("id =? and is_delete =?", userID, notDelete).
+		Updates(map[string]interface{}{"is_delete": delete, "update_time": time.Now(), "remark": "通过API进行删除"}).Error
 }

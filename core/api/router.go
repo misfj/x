@@ -8,11 +8,16 @@ import (
 
 func (s *Server) initRoute() {
 	s.eng.GET("/api/v1/node/1", ws.NodeService)
-	s.eng.POST("/v1/user/register", service.Register)
-	s.eng.POST("/v1/user/login", service.Login)
-	userGroup := s.eng.Group("/v1/user/")
+	s.eng.Use(middware.Cors())
+	x := s.eng.Group("/v1/user")
+	x.POST("register", service.Register)
+
+	//userNoAuthGroup.POST("/v1/user/login", service.Login)
+	userGroup := s.eng.Group("/v1/user")
 	userGroup.Use(middware.Access())
 	userGroup.POST("/modify", service.Modify)
+	userGroup.POST("/delete", service.Delete)
+	userGroup.POST("/logout", service.Logout)
 	userGroup.POST("/test", service.Test)
 	//userGroup := s.eng.Group("/v1/user")
 	//userGroup.POST("/login")

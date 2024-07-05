@@ -31,11 +31,11 @@
     "max_backups": 5
   },
   "Db": {
-    "host": "10.10.254.13",
+    "host": "127.0.0.1",
     "name": "te",
-    "port": 3307,
+    "port": 3306,
     "user": "root",
-    "password": "9ijnBHU*@123"
+    "password": "root"
   },
   "WaterServer": {
     "grid": "security/grid",

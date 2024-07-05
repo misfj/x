@@ -9,6 +9,6 @@ const (
 	ArrearsSpaceStatus        = "1"
 	forbidSpaceStatus         = "2"
 	AccessKeyNormalStatus     = "正常"
-	AuthUserTokenNormalStatus = "正常"
-	AuthUserNormalStatus      = "正常"
+	AuthUserTokenNormalStatus = 0x01
+	AuthUserNormalStatus      = 0x01
 )

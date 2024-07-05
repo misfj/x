@@ -55,7 +55,7 @@ func Login(gctx *gin.Context) {
 	response(gctx, http.StatusOK, "success", accessKey)
 }
 func Test(gctx *gin.Context) {
-	response(gctx, http.StatusOK, "success", "ok")
+	response(gctx, http.StatusOK, "success", "")
 }
 
 func Modify(gctx *gin.Context) {
@@ -81,4 +81,22 @@ func Modify(gctx *gin.Context) {
 		response(gctx, http.StatusNotFound, err.Error(), "")
 		return
 	}
+	response(gctx, http.StatusOK, "success", "")
+	return
+}
+func Delete(gctx *gin.Context) {
+	accessKey, exist := gctx.Get("AccessKey")
+	if !exist {
+		response(gctx, http.StatusInternalServerError, "internal error", "")
+		return
+	}
+	err := user.Delete(accessKey.(string))
+	if err != nil {
+		response(gctx, http.StatusInternalServerError, err.Error(), "")
+	}
+	response(gctx, http.StatusOK, "success", "")
+}
+
+func List(gctx *gin.Context) {
+
 }

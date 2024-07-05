@@ -48,3 +48,8 @@ func UserCaCreate(db *gorm.DB, userID uint64,
 	userCa.TimeStamp = timeStamp
 	return db.Create(&userCa).Error
 }
+
+func UserCaDeleteByUserIds(db *gorm.DB, userId uint64) error {
+	return db.Model(&UserCa{}).Where("user_id = ? and is_delete = ? ", userId, notDelete).Updates(map[string]interface{}{"is_delete": delete, "update_time": time.Now(),
+		"remark": "API删除"}).Error
+}

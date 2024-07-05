@@ -29,3 +29,7 @@ type ModifyRequest struct {
 	NickName  string `json:"nick_name"`
 	// UserName  string `json:"user_name"`
 }
+
+type ListRequest struct {
+	PageSize
+}

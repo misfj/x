@@ -39,3 +39,11 @@ func AuthUserSpaceCreate(db *gorm.DB, userId uint64,
 	authUserSpace.SpaceStatus = normalSpaceStatus
 	return db.Model(&authUserSpace).Create(&authUserSpace).Error
 }
+
+func AuthUserSpaceDeleteByUserId(db *gorm.DB, userId uint64) error {
+	return db.Model(AuthUserSpace{}).Where("user_id = ? and is_delete = ? ", userId, notDelete).Updates(map[string]interface{}{
+		"is_delete":   delete,
+		"update_time": time.Now(),
+		"remark":      "API删除",
+	}).Error
+}

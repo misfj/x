@@ -8,7 +8,6 @@ import (
 	"coredx/db"
 	"coredx/log"
 	"coredx/store/cache"
-	"coredx/store/ipfs"
 	"coredx/store/minio"
 	"coredx/utils"
 	"fmt"
@@ -46,10 +45,10 @@ var coredCmd = &cobra.Command{
 		//初始化数据库
 		db.Init(config.DbConfig())
 		//初始化备份服务器
-		err = ipfs.Init(config.BackupConfig())
-		if err != nil {
-			log.Error(err)
-		}
+		//err = ipfs.Init(config.BackupConfig())
+		//if err != nil {
+		//	log.Error(err)
+		//}
 		//初始化平台缓存服务器
 		cache.Init(config.CacheConfig())
 		//初始化存储服务器

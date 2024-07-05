@@ -92,3 +92,26 @@ func Modify(req *protocol.ModifyRequest, accessKey string) error {
 	err = v1.AuthUserModifyByUserId(db.GDB, phoneType, phoneNum, email, password, idCard, bankType, bankNum, nickName, userID)
 	return err
 }
+
+func Delete(accessKey string) error {
+	//根据accessKey获取user_id
+	userId, err := v1.AuthUserTokenGetUserIdByAccessKey(db.GDB, accessKey)
+	if err != nil {
+		return err
+	}
+
+	//设计到更新字段的表有auth_user,auth_user_token,user_ca,auth_user_space将is_delete的字段修改为1
+	err = v1.AuthUserDeleteByUserId(db.GDB, userId)
+	if err != nil {
+		return err
+	}
+	err = v1.AuthUserTokenDeleteByUserId(db.GDB, userId)
+	if err != nil {
+		return err
+	}
+	err = v1.UserCaDeleteByUserIds(db.GDB, userId)
+	if err != nil {
+		return err
+	}
+	return v1.AuthUserSpaceDeleteByUserId(db.GDB, userId)
+}
