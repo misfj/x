@@ -57,3 +57,23 @@ func (r *LoginRequest) Validate() error {
 func (r *ModifyRequest) Validate() error {
 	return nil
 }
+
+func (r *ListRequest) Validate() error {
+	if r.PageNum == 0 || r.PageSize == 0 {
+		return errors.New("page_num  or  page_size can not be empty")
+	}
+	return nil
+}
+
+func (r *GetRequest) Validate() error {
+	if r.FuzzyUsername == "" {
+		return errors.New("fuzzy_username can not be empty")
+	}
+	return nil
+}
+func (r *SpaceExpandRequest) Validate() error {
+	if r.ExpandSize == 0 {
+		return errors.New("expand_size can not be empty")
+	}
+	return nil
+}

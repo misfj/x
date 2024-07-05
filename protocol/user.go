@@ -1,5 +1,7 @@
 package protocol
 
+import "time"
+
 type RegisterRequest struct {
 	//真实姓名
 	Username     string `json:"user_name"`
@@ -31,5 +33,30 @@ type ModifyRequest struct {
 }
 
 type ListRequest struct {
-	PageSize
+	PageNum  int `json:"page_num"`
+	PageSize int `json:"page_size"`
+}
+
+// SingleUser Response
+type SingleUser struct {
+	NickName   string    `json:"nick_name"`
+	PhoneType  string    `json:"phone_type"`
+	Phone      string    `json:"phone"`
+	Email      string    `json:"email"`
+	CreateTime time.Time `json:"register_time"`
+}
+
+type GetRequest struct {
+	FuzzyUsername string `json:"fuzzy_username"`
+}
+
+// SpaceInfo Response
+type SpaceInfo struct {
+	Total          int64   `json:"total"`
+	UseSpace       float64 `json:"use_space"`
+	AvailableSpace float64 `json:"available_space"`
+	SpaceStatus    string  `json:"space_status"`
+}
+type SpaceExpandRequest struct {
+	ExpandSize int64 `json:"expand_size"`
 }

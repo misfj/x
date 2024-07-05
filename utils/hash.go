@@ -2,6 +2,7 @@ package utils
 
 import (
 	"crypto/md5"
+	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -18,6 +19,10 @@ import (
 func MD5(data []byte) string {
 	hash := md5.Sum(data)
 	return hex.EncodeToString(hash[:])
+}
+func HS256(data []byte) string {
+	sum256 := sha256.Sum256(data)
+	return hex.EncodeToString(sum256[:])
 }
 func IslegalError(public string, private string) error {
 	msg := "cored is the core service of super nodes and cloud platforms"

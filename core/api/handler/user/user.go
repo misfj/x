@@ -115,3 +115,29 @@ func Delete(accessKey string) error {
 	}
 	return v1.AuthUserSpaceDeleteByUserId(db.GDB, userId)
 }
+
+func List(pageSize int, pageNum int) ([]*protocol.SingleUser, error) {
+	return v1.AuthUserListByPageSize(db.GDB, pageNum, pageSize)
+}
+func Get(fuzzyName string, batchSize int) ([]*protocol.SingleUser, error) {
+	return v1.AuthUserFindMatchByFuzzyName(db.GDB, fuzzyName, batchSize)
+}
+
+func SpaceInfo(accessKey string) (*protocol.SpaceInfo, error) {
+	userId, err := v1.AuthUserTokenGetUserIdByAccessKey(db.GDB, accessKey)
+	if err != nil {
+		return nil, err
+	}
+	return v1.AuthUserSpaceGetInfoByUserId(db.GDB, userId)
+}
+func SpaceExpand(accessKey string, expandSize int) (*protocol.SpaceInfo, error) {
+	userId, err := v1.AuthUserTokenGetUserIdByAccessKey(db.GDB, accessKey)
+	if err != nil {
+		return nil, err
+	}
+	return v1.AuthUserSpaceExpandByUserId(db.GDB, userId, expandSize)
+}
+func Upgrade(accessKey string) error {
+	//did 生成规则(私钥的Sha256)
+	v1.AuthUserUpgradeByUserId()
+}

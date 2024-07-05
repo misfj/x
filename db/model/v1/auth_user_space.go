@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"coredx/protocol"
 	"gorm.io/gorm"
 	"time"
 )
@@ -47,3 +48,74 @@ func AuthUserSpaceDeleteByUserId(db *gorm.DB, userId uint64) error {
 		"remark":      "API删除",
 	}).Error
 }
+func AuthUserSpaceGetInfoByUserId(db *gorm.DB, userId uint64) (*protocol.SpaceInfo, error) {
+	var authUserSpace AuthUserSpace
+	tx := db.Model(AuthUserSpace{}).Where("user_id = ?  and  is_delete = ?", userId, notDelete).First(&authUserSpace)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	var convert = func(authUserSpace *AuthUserSpace) *protocol.SpaceInfo {
+
+		var f = func(spaceStatus string) string {
+			if spaceStatus == normalSpaceStatus {
+				return "可用"
+			}
+			return "不可用"
+		}
+		return &protocol.SpaceInfo{
+			Total:          authUserSpace.Space,
+			UseSpace:       authUserSpace.UseSpace,
+			AvailableSpace: authUserSpace.AvailableSpace,
+			SpaceStatus:    f(authUserSpace.SpaceStatus),
+		}
+	}
+	return convert(&authUserSpace), nil
+}
+func AuthUserSpaceExpandByUserId(db *gorm.DB, userId uint64, expandSize int) (*protocol.SpaceInfo, error) {
+	var f = func(spaceStatus string) string {
+		if spaceStatus == normalSpaceStatus {
+			return "可用"
+		}
+		return "不可用"
+	}
+	var authUserSpace AuthUserSpace
+	tx := db.Model(AuthUserSpace{}).Where("user_id = ?  and  is_delete = ?", userId, notDelete).First(&authUserSpace)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	totalSpace := authUserSpace.Space + int64(expandSize)
+	useSpace := authUserSpace.UseSpace
+	availableSpace := float64(totalSpace) - useSpace
+	tx = db.Model(AuthUserSpace{}).Where("user_id = ?  and  is_delete = ?", userId, notDelete).Updates(map[string]interface{}{
+		"space":           totalSpace,
+		"use_space":       useSpace,
+		"available_space": availableSpace,
+		"update_time":     time.Now(),
+		"remark":          "用户增加容量",
+	})
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return &protocol.SpaceInfo{
+		Total:          totalSpace,
+		UseSpace:       useSpace,
+		AvailableSpace: availableSpace,
+		SpaceStatus:    f(normalSpaceStatus),
+	}, nil
+}
+
+//func convertx(authUserSpace *AuthUserSpace) *protocol.SpaceInfo {
+//
+//	var f = func(spaceStatus string) string {
+//		if spaceStatus == normalSpaceStatus {
+//			return "可用"
+//		}
+//		return "不可用"
+//	}
+//	return &protocol.SpaceInfo{
+//		Total:          authUserSpace.Space,
+//		UseSpace:       authUserSpace.UseSpace,
+//		AvailableSpace: authUserSpace.AvailableSpace,
+//		SpaceStatus:    f(authUserSpace.SpaceStatus),
+//	}
+//}

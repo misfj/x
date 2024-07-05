@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"coredx/protocol"
 	"coredx/utils"
 	"errors"
 	"fmt"
@@ -133,4 +134,44 @@ func AuthUserModifyByUserId(db *gorm.DB,
 func AuthUserDeleteByUserId(db *gorm.DB, userID uint64) error {
 	return db.Model(AuthUser{}).Where("id =? and is_delete =?", userID, notDelete).
 		Updates(map[string]interface{}{"is_delete": delete, "update_time": time.Now(), "remark": "通过API进行删除"}).Error
+}
+
+func AuthUserListByPageSize(db *gorm.DB, pageSize int, pageNum int) ([]*protocol.SingleUser, error) {
+	var authUserList []*AuthUser
+	page := pageNum     // 当前页码
+	perPage := pageSize // 每页记录数
+	offset := (page - 1) * perPage
+	//tx := db.Model(AuthUser{}).Limit(perPage).Offset(offset).Order("id desc").Find(&authUserList)
+	tx := db.Model(AuthUser{}).Where("is_delete =?", notDelete).Limit(perPage).Offset(offset).Order("id asc").Find(&authUserList)
+
+	return convert(authUserList), tx.Error
+
+}
+func AuthUserFindMatchByFuzzyName(db *gorm.DB, fuzzyName string, batchNum int) ([]*protocol.SingleUser, error) {
+	var authUserList []*AuthUser
+	tx := db.Model(AuthUser{}).Where("nick_name like? and is_delete =?", "%"+fuzzyName+"%", notDelete).Limit(batchNum).Find(&authUserList)
+	return convert(authUserList), tx.Error
+}
+func AuthUserUpgradeByUserId(db *gorm.DB, userId int64, did string, level int) (string, error) {
+	//var authUser AuthUser
+	levelString := strconv.Itoa(level)
+	tx := db.Model(AuthUser{}).Where("user_id = ? and is_delete =?", userId, notDelete).Updates(map[string]interface{}{"level": levelString, "did": did, "update_time": time.Now()})
+	return did, tx.Error
+
+}
+
+// convert
+func convert(authUserList []*AuthUser) []*protocol.SingleUser {
+
+	ps := make([]*protocol.SingleUser, 0, len(authUserList))
+	for _, v := range authUserList {
+		var p protocol.SingleUser
+		p.NickName = v.NickName
+		p.PhoneType = v.PhoneTyp
+		p.Phone = v.PhoneNum
+		p.Email = v.Email
+		p.CreateTime = v.CreateTime
+		ps = append(ps, &p)
+	}
+	return ps
 }
