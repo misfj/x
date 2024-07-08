@@ -7,11 +7,14 @@ import (
 )
 
 func (s *Server) initRoute() {
-	s.eng.GET("/api/v1/node/1", ws.NodeService)
+	//绑定全局跨域
 	s.eng.Use(middware.Cors())
+	s.eng.GET("/api/v1/node/1", ws.NodeService)
 	x := s.eng.Group("/v1/user")
 	x.POST("register", service.Register)
 	x.POST("login", service.Login)
+
+	//用户组
 	userGroup := s.eng.Group("/v1/user")
 	userGroup.Use(middware.Access())
 	userGroup.POST("/modify", service.Modify)
@@ -23,6 +26,10 @@ func (s *Server) initRoute() {
 	userGroup.POST("/space/expand", service.SpaceExpand)
 	userGroup.POST("/upgrade", service.UpGrade)
 	userGroup.POST("/test", service.Test)
+
+	//管理组
+	managerGroup := s.eng.Group("/v1/manager")
+
 	//userGroup := s.eng.Group("/v1/user")
 	//userGroup.POST("/login")
 	//s.eng.POST("api/login", service.LoginService)

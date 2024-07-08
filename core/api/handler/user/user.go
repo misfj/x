@@ -137,7 +137,8 @@ func SpaceExpand(accessKey string, expandSize int) (*protocol.SpaceInfo, error) 
 	}
 	return v1.AuthUserSpaceExpandByUserId(db.GDB, userId, expandSize)
 }
-func Upgrade(accessKey string) error {
-	//did 生成规则(私钥的Sha256)
-	v1.AuthUserUpgradeByUserId()
-}
+
+//func Upgrade(accessKey string) error {
+//	//did 生成规则(私钥的Sha256)
+//	v1.AuthUserUpgradeByUserId()
+//}

@@ -53,6 +53,7 @@ func UserCaDeleteByUserIds(db *gorm.DB, userId uint64) error {
 	return db.Model(&UserCa{}).Where("user_id = ? and is_delete = ? ", userId, notDelete).Updates(map[string]interface{}{"is_delete": delete, "update_time": time.Now(),
 		"remark": "API删除"}).Error
 }
-func UserCaFindPrivateKeyByUserId(db *gorm.DB, userId uint64) (string, error) {
-	var
-}
+
+//func UserCaFindPrivateKeyByUserId(db *gorm.DB, userId uint64) (string, error) {
+//	return "", fmt.Errorf("not found private key")
+//}

@@ -168,6 +168,6 @@ func SpaceExpand(gctx *gin.Context) {
 	response(gctx, http.StatusOK, "success", spaceInfo)
 }
 func UpGrade(gctx *gin.Context) {
-	accessKeyInterface, _ := gctx.Get("AccessKey")
-	accessKey := accessKeyInterface.(string)
+	//accessKeyInterface, _ := gctx.Get("AccessKey")
+	// accessKeyInterface.(string)
 }
