@@ -19,24 +19,6 @@ func NewWrapWsConn(conn *websocket.Conn, interval int) *WrapWsConn {
 		internal: interval,
 	}
 }
-func (w *WrapWsConn) FlushDeadLine() {
-	defer func() {
-		if e := recover(); e != nil {
-			log.Errorf("超级大错误,请联系超级节点负责人:%v", e)
-			return
-
-		}
-	}()
-	log.Debugf("当前时间:%v", time.Now())
-	log.Debugf("ws conn flush dead line:%v", time.Now().Add(time.Duration(w.internal)*time.Second))
-	sub := time.Now().Add(time.Duration(w.internal) * time.Second).Sub(time.Now())
-	log.Debugf("当前时间Sub:%v", sub)
-	err := w.conn.SetReadDeadline(time.Now().Add(time.Duration(w.internal) * time.Second))
-	if err != nil {
-		log.Errorf("超级大错误,请联系超级节点负责人:%v", err)
-		return
-	}
-}
 
 type WrapWsConn struct {
 	//gorilla websocket 包非并发安全,所以加锁
@@ -79,7 +61,7 @@ func NodeService(ctx *gin.Context) {
 		return
 	}
 	wrapConn := NewWrapWsConn(c, 20)
-	wrapConn.FlushDeadLine()
+	//wrapConn.FlushDeadLine()
 	handleNode(wrapConn)
 }
 func handleNode(wrap *WrapWsConn) {
@@ -91,7 +73,7 @@ func handleNode(wrap *WrapWsConn) {
 			log.Error(err)
 			return
 		}
-		wrap.FlushDeadLine()
+		//wrap.FlushDeadLine()
 		log.Debugf("ws server read  msg:%s", string(p))
 		cmd, err := utils.ExtractCmdValue(string(p))
 		if err != nil {
@@ -115,11 +97,11 @@ func handleNode(wrap *WrapWsConn) {
 		case protocol.CMD_NODE_HEALTHY_REQ:
 			//todo 使用平台数据库的私钥进行验签,验签不通过就断开连接,节点进行公私钥检查
 			//刷新到期时间
-			wrap.FlushDeadLine()
+			//wrap.FlushDeadLine()
 		case protocol.CMD_NODE_DIRTY_REQ:
 			dirty, _ := handler.Dirty(p)
 			wrap.Write(websocket.TextMessage, dirty)
-			wrap.FlushDeadLine()
+			//wrap.FlushDeadLine()
 			//todo 后续业务
 
 		}

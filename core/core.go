@@ -4,6 +4,7 @@ import (
 	"context"
 	"coredx/config"
 	"coredx/core/api"
+	"coredx/core/node"
 	"coredx/log"
 	"sync"
 )
@@ -25,9 +26,9 @@ func New() *Core {
 		servers: make(map[string]Server),
 	}
 	apiServer := api.New(config.APIConfig())
-	//vnodeServer := node.NewVNodeServer(config.APIConfig().ListenAddress)
+	vnodeServer := node.NewVNodeServer(config.APIConfig().ListenAddress)
 	c.servers[apiServer.Name()] = apiServer
-	//c.servers[vnodeServer.Name()] = vnodeServer
+	c.servers[vnodeServer.Name()] = vnodeServer
 	return &c
 }
 func (c *Core) Init() (err error) {
