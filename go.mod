@@ -9,7 +9,7 @@ require (
 	github.com/minio/minio-go/v7 v7.0.72
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/satori/go.uuid v1.2.0
-	github.com/shirou/gopsutil/v3 v3.24.5
+	github.com/shirou/gopsutil/v4 v4.24.6
 	github.com/spf13/cobra v1.8.1
 	github.com/wumansgy/goEncrypt v1.1.0
 	go.uber.org/zap v1.27.0

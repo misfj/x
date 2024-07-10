@@ -89,4 +89,14 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+
+	//fmt.Println(system.GetCpuPercent())
+	//fmt.Println(system.GetMemPercent())
+	//fmt.Println(system.GetDiskPercent())
+	//
+	//p := process.GetProcess()
+	//
+	//for _, s := range p {
+	//	fmt.Println(s)
+	//}
 }
