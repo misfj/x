@@ -28,7 +28,7 @@ func (s *Server) initRoute() {
 	userGroup.POST("/test", service.Test)
 
 	//管理组
-	managerGroup := s.eng.Group("/v1/manager")
+	//managerGroup := s.eng.Group("/v1/manager")
 
 	//userGroup := s.eng.Group("/v1/user")
 	//userGroup.POST("/login")
