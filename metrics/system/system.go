@@ -23,14 +23,14 @@ func GetDiskPercent() float64 {
 
 	parts, err := disk.Partitions(true)
 	if err != nil {
-		log.Error("Error getting disk partitions:", err)
+		log.Error(err)
 		return 0
 	}
 
 	for _, part := range parts {
 		diskInfo, err := disk.Usage(part.Mountpoint)
 		if err != nil {
-			log.Error("Error getting usage for %s: %v\n", part.Mountpoint, err)
+			log.Error(err)
 			continue
 		}
 
