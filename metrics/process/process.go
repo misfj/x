@@ -2,11 +2,30 @@ package process
 
 import (
 	"coredx/log"
+	"fmt"
+	"github.com/shirou/gopsutil/v4/net"
 	"github.com/shirou/gopsutil/v4/process"
-	"strconv"
 )
 
-type Process struct {
+type ConnType int
+
+const (
+	TCP ConnType = iota + 1
+	UDP
+)
+
+func (ct ConnType) String() string {
+	switch ct {
+	case TCP:
+		return "TCP"
+	case UDP:
+		return "UDP"
+	default:
+		return "unknown"
+	}
+}
+
+type ProInfo struct {
 	PName      string  `json:"pName"`
 	Pid        int32   `json:"pid"`
 	Ppid       int32   `json:"ppid"`
@@ -20,7 +39,7 @@ type Process struct {
 	MemUsed    uint64  `json:"memUsed"` //MB为单位
 }
 
-type NetConn struct {
+type NetConnInfo struct {
 	PName      string `json:"pName"`
 	Pid        int32  `json:"pid"`
 	ConnType   string `json:"connType"`
@@ -29,78 +48,80 @@ type NetConn struct {
 	Status     string `json:"status"`
 }
 
-func GetProcessInfo() []*Process {
+func GetProcessInfo() []*ProInfo {
 	pids, err := process.Pids()
 	if err != nil {
-		log.Error(err)
+		log.Error("Failed to get PIDs:", err)
+		return nil
 	}
 
-	var processes []*Process
+	var processes []*ProInfo
 
 	for _, pid := range pids {
-		newProcess, err := process.NewProcess(pid)
+		p, err := process.NewProcess(pid)
 		if err != nil {
+			log.Error(fmt.Sprintf("Failed to create process for PID %d:", pid), err)
+			continue
+		}
+
+		var (
+			name, status, userName string
+			ppid, numThreads       int32
+			createTime             int64
+			conns                  []net.ConnectionStat
+			cpuUsage               float64
+			memPercent             float32
+			memInfo                *process.MemoryInfoStat
+		)
+
+		if name, err = p.Name(); err != nil {
 			log.Error(err)
 			continue
 		}
 
-		name, err := newProcess.Name()
-		if err != nil {
+		if s, err := p.IsRunning(); err != nil {
 			log.Error(err)
 			continue
+		} else {
+			status = "running"
+			if !s {
+				status = "not running"
+			}
 		}
 
-		s, err := newProcess.IsRunning()
-		if err != nil {
-			log.Error(err)
-			continue
-		}
-
-		status := "running"
-		if !s {
-			status = "not running"
-		}
-
-		ppid, err := newProcess.Ppid()
-		if err != nil {
+		if ppid, err = p.Ppid(); err != nil {
 			log.Error(err)
 		}
 
-		userName, err := newProcess.Username()
-		if err != nil {
+		if userName, err = p.Username(); err != nil {
 			log.Error(err)
 		}
 
-		createTime, err := newProcess.CreateTime()
-		if err != nil {
-			log.Error(err)
-		}
-		numThreads, err := newProcess.NumThreads()
-		if err != nil {
+		if createTime, err = p.CreateTime(); err != nil {
 			log.Error(err)
 		}
 
-		conns, err := newProcess.Connections()
-		if err != nil {
+		if numThreads, err = p.NumThreads(); err != nil {
 			log.Error(err)
 		}
 
-		cpuUsage, err := newProcess.CPUPercent()
-		if err != nil {
-			log.Error("Failed to get CPU usage:", err)
+		if conns, err = p.Connections(); err != nil {
+			log.Error(err)
 		}
 
-		memPercent, err := newProcess.MemoryPercent()
-		if err != nil {
-			log.Error("Failed to get memory percent:", err)
+		if cpuUsage, err = p.CPUPercent(); err != nil {
+			log.Error(err)
 		}
 
-		memInfo, err := newProcess.MemoryInfo()
-		if err != nil {
-			log.Error("Failed to get memory used:", err)
+		if memPercent, err = p.MemoryPercent(); err != nil {
+			log.Error(err)
 		}
 
-		p := &Process{
+		if memInfo, err = p.MemoryInfo(); err != nil {
+			log.Error(err)
+		}
+
+		proInfo := &ProInfo{
 			PName:      name,
 			Pid:        pid,
 			Ppid:       ppid,
@@ -114,8 +135,9 @@ func GetProcessInfo() []*Process {
 			MemUsed:    memInfo.RSS / 1024 / 1024,
 		}
 
-		processes = append(processes, p)
+		processes = append(processes, proInfo)
 	}
+
 	return processes
 }
 
@@ -128,13 +150,13 @@ func KillProcess(pid int32) error {
 	return pro.Kill()
 }
 
-func GetProcessNetInfo() []*NetConn {
+func GetProcessNetInfo() []*NetConnInfo {
 	pids, err := process.Pids()
 	if err != nil {
 		log.Error(err)
 	}
 
-	var netConns []*NetConn
+	var netConns []*NetConnInfo
 
 	for _, pid := range pids {
 		p, err := process.NewProcess(pid)
@@ -156,23 +178,26 @@ func GetProcessNetInfo() []*NetConn {
 		}
 
 		for _, conn := range conns {
-			connType := "unknown"
-			if conn.Type == 1 {
-				connType = "TCP"
-			} else if conn.Type == 2 {
-				connType = "UDP"
-			}
+			localAddr := formatAddr(conn.Laddr)
+			remoteAddr := formatAddr(conn.Raddr)
 
-			netConn := &NetConn{
+			netConn := &NetConnInfo{
 				PName:      name,
 				Pid:        pid,
-				ConnType:   connType,
-				LocalAddr:  conn.Laddr.IP + ":" + strconv.Itoa(int(conn.Laddr.Port)),
-				RemoteAddr: conn.Raddr.IP + ":" + strconv.Itoa(int(conn.Raddr.Port)),
+				ConnType:   ConnType(conn.Type).String(),
+				LocalAddr:  localAddr,
+				RemoteAddr: remoteAddr,
 				Status:     conn.Status,
 			}
 			netConns = append(netConns, netConn)
 		}
 	}
 	return netConns
+}
+
+func formatAddr(addr net.Addr) string {
+	if addr.Port == 0 {
+		return addr.IP
+	}
+	return fmt.Sprintf("%s:%d", addr.IP, addr.Port)
 }
