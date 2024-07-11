@@ -9,6 +9,11 @@ import (
 type Process struct {
 	PName      string  `json:"pName"`
 	Pid        int32   `json:"pid"`
+	Ppid       int32   `json:"ppid"`
+	UserName   string  `json:"userName"`
+	CreateTime int64   `json:"createTime"`
+	NumThreads int32   `json:"numThreads"`
+	NumConns   int     `json:"numConns"`
 	Status     string  `json:"status"`
 	CpuPercent float64 `json:"cpuPercent"`
 	MemPercent float32 `json:"memPercent"`
@@ -35,25 +40,49 @@ func GetProcessInfo() []*Process {
 	for _, pid := range pids {
 		newProcess, err := process.NewProcess(pid)
 		if err != nil {
-			log.Error("Failed to create process:", err)
+			log.Error(err)
 			continue
 		}
 
 		name, err := newProcess.Name()
 		if err != nil {
-			log.Error("Failed to get process name:", err)
+			log.Error(err)
 			continue
 		}
 
 		s, err := newProcess.IsRunning()
 		if err != nil {
-			log.Error("Failed to get process status:", err)
+			log.Error(err)
 			continue
 		}
 
 		status := "running"
 		if !s {
 			status = "not running"
+		}
+
+		ppid, err := newProcess.Ppid()
+		if err != nil {
+			log.Error(err)
+		}
+
+		userName, err := newProcess.Username()
+		if err != nil {
+			log.Error(err)
+		}
+
+		createTime, err := newProcess.CreateTime()
+		if err != nil {
+			log.Error(err)
+		}
+		numThreads, err := newProcess.NumThreads()
+		if err != nil {
+			log.Error(err)
+		}
+
+		conns, err := newProcess.Connections()
+		if err != nil {
+			log.Error(err)
 		}
 
 		cpuUsage, err := newProcess.CPUPercent()
@@ -74,6 +103,11 @@ func GetProcessInfo() []*Process {
 		p := &Process{
 			PName:      name,
 			Pid:        pid,
+			Ppid:       ppid,
+			UserName:   userName,
+			CreateTime: createTime,
+			NumThreads: numThreads,
+			NumConns:   len(conns),
 			Status:     status,
 			CpuPercent: cpuUsage,
 			MemPercent: memPercent,

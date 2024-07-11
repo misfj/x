@@ -7,6 +7,7 @@ import (
 	"coredx/core"
 	"coredx/db"
 	"coredx/log"
+	"coredx/metrics/process"
 	"coredx/store/cache"
 	"coredx/store/minio"
 	"coredx/utils"
@@ -85,20 +86,20 @@ func init() {
 }
 
 func main() {
-	if err := coredCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	//if err := coredCmd.Execute(); err != nil {
+	//	fmt.Println(err)
+	//	os.Exit(1)
+	//}
 
 	//fmt.Println(system.GetCpuPercent())
 	//fmt.Println(system.GetMemPercent())
 	//fmt.Println(system.GetDiskPercent())
 	//
-	//p := process.GetProcessInfo()
-	//
-	//for _, s := range p {
-	//	fmt.Println(s)
-	//}
+	p := process.GetProcessInfo()
+
+	for _, s := range p {
+		fmt.Println(s)
+	}
 	//
 	//err := process.KillProcess(15132)
 	//if err != nil {
