@@ -94,9 +94,20 @@ func main() {
 	//fmt.Println(system.GetMemPercent())
 	//fmt.Println(system.GetDiskPercent())
 	//
-	//p := process.GetProcess()
+	//p := process.GetProcessInfo()
 	//
 	//for _, s := range p {
 	//	fmt.Println(s)
+	//}
+	//
+	//err := process.KillProcess(15132)
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+
+	//s := process.GetProcessNetInfo()
+	//
+	//for _, u := range s {
+	//	fmt.Println(u)
 	//}
 }

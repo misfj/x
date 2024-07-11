@@ -3,17 +3,28 @@ package process
 import (
 	"coredx/log"
 	"github.com/shirou/gopsutil/v4/process"
+	"strconv"
 )
 
 type Process struct {
-	Name       string  `json:"name"`
+	PName      string  `json:"pName"`
 	Pid        int32   `json:"pid"`
 	Status     string  `json:"status"`
 	CpuPercent float64 `json:"cpuPercent"`
 	MemPercent float32 `json:"memPercent"`
+	MemUsed    uint64  `json:"memUsed"` //MB为单位
 }
 
-func GetProcess() []*Process {
+type NetConn struct {
+	PName      string `json:"pName"`
+	Pid        int32  `json:"pid"`
+	ConnType   string `json:"connType"`
+	LocalAddr  string `json:"localAddr"`
+	RemoteAddr string `json:"RemoteAddr"`
+	Status     string `json:"status"`
+}
+
+func GetProcessInfo() []*Process {
 	pids, err := process.Pids()
 	if err != nil {
 		log.Error(err)
@@ -55,15 +66,79 @@ func GetProcess() []*Process {
 			log.Error("Failed to get memory percent:", err)
 		}
 
+		memInfo, err := newProcess.MemoryInfo()
+		if err != nil {
+			log.Error("Failed to get memory used:", err)
+		}
+
 		p := &Process{
-			Name:       name,
+			PName:      name,
 			Pid:        pid,
 			Status:     status,
 			CpuPercent: cpuUsage,
 			MemPercent: memPercent,
+			MemUsed:    memInfo.RSS / 1024 / 1024,
 		}
 
 		processes = append(processes, p)
 	}
 	return processes
+}
+
+func KillProcess(pid int32) error {
+	pro, err := process.NewProcess(pid)
+	if err != nil {
+		return err
+	}
+
+	return pro.Kill()
+}
+
+func GetProcessNetInfo() []*NetConn {
+	pids, err := process.Pids()
+	if err != nil {
+		log.Error(err)
+	}
+
+	var netConns []*NetConn
+
+	for _, pid := range pids {
+		p, err := process.NewProcess(pid)
+		if err != nil {
+			log.Error(err)
+			continue
+		}
+
+		name, err := p.Name()
+		if err != nil {
+			log.Error(err)
+			continue
+		}
+
+		conns, err := p.Connections()
+		if err != nil {
+			log.Error(err)
+			continue
+		}
+
+		for _, conn := range conns {
+			connType := "unknown"
+			if conn.Type == 1 {
+				connType = "TCP"
+			} else if conn.Type == 2 {
+				connType = "UDP"
+			}
+
+			netConn := &NetConn{
+				PName:      name,
+				Pid:        pid,
+				ConnType:   connType,
+				LocalAddr:  conn.Laddr.IP + ":" + strconv.Itoa(int(conn.Laddr.Port)),
+				RemoteAddr: conn.Raddr.IP + ":" + strconv.Itoa(int(conn.Raddr.Port)),
+				Status:     conn.Status,
+			}
+			netConns = append(netConns, netConn)
+		}
+	}
+	return netConns
 }
