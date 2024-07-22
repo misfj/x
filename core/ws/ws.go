@@ -1,7 +1,8 @@
-package node
+package ws
 
 import (
 	"context"
+	"coredx/config"
 	"coredx/log"
 	"coredx/protocol"
 	"coredx/utils"
@@ -49,7 +50,7 @@ type VNodeServer struct {
 	ctx          context.Context
 }
 
-func NewVNodeServer(platNodeAddr string) *VNodeServer {
+func NewWsServer(ws *config.Ws) *VNodeServer {
 	platWsAddr := fmt.Sprintf("ws://%s/api/v1/node/1", platNodeAddr)
 	return &VNodeServer{
 		platNodeAddr: platWsAddr,

@@ -2,10 +2,11 @@ package log
 
 import (
 	"coredx/config"
-	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
 	"strings"
 	"time"
+
+	"gopkg.in/natefinch/lumberjack.v2"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/buffer"
@@ -41,7 +42,7 @@ func (l *Logger) fileWriter(conf *config.Logging) *lumberjack.Logger {
 		// 历史日志文件保留天数
 		MaxAge: int(conf.MaxAge),
 		// 最大保留历史日志数量
-		MaxBackups: int(conf.MaxBackUp),
+		MaxBackups: int(conf.MaxBackup),
 		// 本地时区
 		LocalTime: true,
 		// 历史日志文件压缩标识

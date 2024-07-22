@@ -1,1 +1,21 @@
 2024-06-21 13:16:17.922493 ERROR coredx/core.go:18 error
+2024-07-22 13:52:13.591092 INFO x/core.go:111 co
+2024-07-22 13:54:48.816817 INFO x/core.go:111 co
+2024-07-22 13:56:05.33966 INFO x/core.go:111 co
+2024-07-22 14:27:57.584135 INFO x/core.go:111 co
+2024-07-22 14:30:30.313242 INFO x/core.go:111 co
+2024-07-22 14:30:48.65553 INFO x/core.go:111 co
+2024-07-22 14:31:14.073066 INFO x/core.go:111 co
+2024-07-22 14:31:48.34985 INFO x/core.go:111 co
+2024-07-22 14:32:41.774933 INFO x/core.go:111 co
+2024-07-22 14:41:06.273948 INFO x/core.go:111 co
+2024-07-22 14:41:21.581527 INFO x/core.go:111 co
+2024-07-22 14:41:45.435018 INFO x/core.go:111 co
+2024-07-22 14:48:48.737458 ERROR ipfs/ipfs.go:32 Post "http://10.10.254.11:5001/api/v0/swarm/peers": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+2024-07-22 14:49:16.556333 ERROR ipfs/ipfs.go:32 Post "http://10.10.254.11:5001/api/v0/swarm/peers": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+2024-07-22 14:49:34.605685 ERROR ipfs/ipfs.go:32 Post "http://10.10.254.11:5001/api/v0/swarm/peers": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+2024-07-22 14:50:00.258984 ERROR ipfs/ipfs.go:32 Post "http://10.10.254.11:5001/api/v0/swarm/peers": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+2024-07-22 14:50:28.881566 ERROR ipfs/ipfs.go:32 Post "http://10.10.254.11:5001/api/v0/swarm/peers": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+2024-07-22 14:50:56.69818 ERROR ipfs/ipfs.go:32 Post "http://10.10.254.11:5001/api/v0/swarm/peers": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+2024-07-22 14:51:38.692711 ERROR ipfs/ipfs.go:32 Post "http://10.10.254.11:5001/api/v0/swarm/peers": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+2024-07-22 14:56:31.74296 ERROR ipfs/ipfs.go:32 Post "http://10.10.254.11:5001/api/v0/swarm/peers": context deadline exceeded (Client.Timeout exceeded while awaiting headers)

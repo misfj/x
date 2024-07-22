@@ -2,9 +2,7 @@ package core
 
 import (
 	"context"
-	"coredx/config"
-	"coredx/core/api"
-	"coredx/core/node"
+	"coredx/core/wsnode"
 	"coredx/log"
 	"sync"
 )
@@ -25,10 +23,12 @@ func New() *Core {
 	c := Core{
 		servers: make(map[string]Server),
 	}
-	apiServer := api.New(config.APIConfig())
-	vnodeServer := node.NewVNodeServer(config.APIConfig().ListenAddress)
-	c.servers[apiServer.Name()] = apiServer
-	c.servers[vnodeServer.Name()] = vnodeServer
+	// apiServer := api.New(config.GetApi())
+	// vnodeServer := node.NewVNodeServer(config.GetApi().ListenAddress)
+	wsNode := wsnode.NewWsNode()
+	c.servers[wsNode.Name()] = wsNode
+	// c.servers[apiServer.Name()] = apiServer
+	// c.servers[vnodeServer.Name()] = vnodeServer
 	return &c
 }
 func (c *Core) Init() (err error) {
@@ -55,7 +55,6 @@ func (c *Core) Run(ctx context.Context) {
 		c.wg.Add(1)
 
 		go func(serv Server, wg *sync.WaitGroup) {
-
 			serv.Startup(ctx)
 			serv.Close()
 			wg.Done()

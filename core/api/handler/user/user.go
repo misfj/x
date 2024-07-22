@@ -42,7 +42,7 @@ func Register(req *protocol.RegisterRequest) error {
 		return err
 	}
 	// 添加用户凭证
-	_, err = v1.AuthUserTokenCreate(db.GDB, userID, publicMD5, time.Now().Add(time.Hour*time.Duration(config.JwtConfig().Exp)*24), "正常")
+	_, err = v1.AuthUserTokenCreate(db.GDB, userID, publicMD5, time.Now().Add(time.Hour*time.Duration(config.GetJwt().Exp)*24), "正常")
 	if err != nil {
 		log.Debug(2)
 		return err
@@ -55,7 +55,7 @@ func Register(req *protocol.RegisterRequest) error {
 	}
 	//设置用户可用空间
 	if err = v1.AuthUserSpaceCreate(db.GDB, userID,
-		config.StoreConfig().DefaultSize, 0, float64(config.StoreConfig().DefaultSize)); err != nil {
+		int64(config.GetStore().DefaultSize), 0, float64(config.GetStore().DefaultSize)); err != nil {
 		log.Debug(4)
 		return err
 	}

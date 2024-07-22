@@ -18,7 +18,7 @@ import (
 )
 
 type Server struct {
-	config    *config.APIServer
+	config    *config.API
 	eng       *gin.Engine
 	httpServe *http.Server
 	ctx       context.Context
@@ -28,10 +28,10 @@ type Server struct {
 }
 
 func e() *gin.Engine {
-	gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(gin.DebugMode)
 	return gin.New()
 }
-func New(config *config.APIServer) *Server {
+func New(config *config.API) *Server {
 	//todo 将节点公私密钥写入数据库.如果作为超级节点，将自己的公钥上报给女娲云链平台.在以后的业务用的着.目前放在内存
 	pair, err := rsa.GenerateRsaKeyBase64(2048)
 	if err != nil {

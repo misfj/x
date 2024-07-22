@@ -3,10 +3,11 @@ package minio
 import (
 	"coredx/config"
 	"coredx/log"
-	"github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/credentials"
 	"os"
 	"time"
+
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
 var cli *minio.Client
@@ -16,8 +17,8 @@ var err error
 // Init 初始化女娲平台缓存服务器
 func Init(cfg *config.Store) {
 	cli, err = minio.New(cfg.EndPoint, &minio.Options{
-		Creds:  credentials.NewStaticV4(cfg.AccessID, cfg.SecretKey, ""),
-		Secure: cfg.UseSSL,
+		Creds:  credentials.NewStaticV4(cfg.AccessID, cfg.SecretAccessKey, ""),
+		Secure: cfg.UseSsl,
 	})
 	if err != nil {
 		log.Error(err)

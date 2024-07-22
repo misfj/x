@@ -2,6 +2,7 @@ package db
 
 import (
 	"coredx/config"
+	"coredx/log"
 	"fmt"
 	"os"
 
@@ -29,6 +30,7 @@ func Init(conf *config.Db) {
 		os.Exit(1)
 		return
 	}
+	log.Info("initial mysql  success")
 	//是否开启连接数
 	//s, err := db.DB()
 	//s.SetMaxIdleConns()

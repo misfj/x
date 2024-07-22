@@ -2,17 +2,20 @@ package utils
 
 import (
 	"crypto/md5"
+	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"golang.org/x/crypto/bcrypt"
 	"log"
 	"os"
 	"strings"
 	"time"
 
+	"golang.org/x/crypto/bcrypt"
+
+	"github.com/tjfoc/gmsm/sm2"
 	"github.com/wumansgy/goEncrypt/rsa"
 )
 
@@ -81,7 +84,32 @@ func Islegal(public string, private string) {
 		os.Exit(1)
 	}
 }
-
+func Sm2IsLegal(private *sm2.PrivateKey, public *sm2.PublicKey) {
+	data := "hello,world!"
+	cipher, err := sm2.Encrypt(public, []byte(data), rand.Reader, sm2.C1C2C3)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	plain, err := sm2.Decrypt(private, cipher, sm2.C1C2C3)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	if !strings.EqualFold(data, string(plain)) {
+		fmt.Println("decryt  error")
+		os.Exit(1)
+	}
+	sign, err := private.Sign(rand.Reader, []byte(data), nil)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	if !public.Verify([]byte(data), sign) {
+		fmt.Println("verify  error")
+		os.Exit(1)
+	}
+}
 func CheckAndCreateFiles(publicPath, privatePath string) {
 
 	// 检查a.txt是否存在

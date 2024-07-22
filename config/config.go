@@ -1,160 +1,187 @@
 package config
 
-import (
-	"time"
-)
+import "sync"
 
-type DB struct {
-	Host     string `json:"host"`
-	Port     int    `json:"port"`
-	User     string `json:"user"`
-	Password string `json:"password"`
-	Name     string `json:"name"`
+func GetDb() *Db {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	return &Config.Db
+}
+func GetJwt() *Jwt {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	return &Config.Jwt
+}
+func GetCache() *Cache {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	return &Config.Cache
+}
+func GetStore() *Store {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	return &Config.Store
+}
+func GetBack() *Backup {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	return &Config.Backup
+}
+func GetLogging() *Logging {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	return &Config.Logging
+}
+func GetDr() *Dr {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	return &Config.Dr
+}
+func GetApi() *API {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	return &Config.API
+}
+func GetWs() *Ws {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	return &Config.Ws
+}
+func GetWater() *Water {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	return &Config.Water
+}
+func GetManage() *Manage {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	return &Config.Manage
+}
+func GetNode() *Node {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	return &Config.Node
 }
 
-type Cfg struct {
-	Jwt          Jwt          `json:"Jwt"`
-	Cache        Cache        `json:"Cache"`
-	Store        Store        `json:"Store"`
-	BackUp       BackUp       `json:"BackUp"`
-	Logging      Logging      `json:"Logging"`
-	Db           Db           `json:"Db"`
-	ManageServer ManageServer `json:"ManageServer"`
-	DRServer     DRServer     `json:"DRServer"`
-	APIServer    APIServer    `json:"APIServer"`
-	WaterServer  WaterServer  `json:"WaterServer"`
+// func
+var mutex sync.RWMutex
+
+type config struct {
+	Db  Db  `yaml:"db"`
+	Jwt Jwt `yaml:"jwt"`
+
+	Cache   Cache   `yaml:"cache"`
+	Store   Store   `yaml:"store"`
+	Backup  Backup  `yaml:"backup"`
+	Logging Logging `yaml:"logging"`
+	Dr      Dr      `yaml:"dr"`
+	API     API     `yaml:"api"`
+	Ws      Ws      `yaml:"ws"`
+	Water   Water   `yaml:"water"`
+	Manage  Manage  `yaml:"manage`
+	Node    Node    `yaml:"node"`
 }
 
-// Jwt Token
-type Jwt struct {
-	Exp    int    `json:"exp"`
-	Iss    string `json:"iss"`
-	Secret string `json:"secret"`
-	Sub    string `json:"sub"`
-}
-type Cache struct {
-	EndPoint  string `json:"end_point"`
-	UseSSL    bool   `json:"use_ssl"`
-	AccessID  string `json:"access_id"`
-	SecretKey string `json:"secret_key"`
-	Expire    uint8  `json:"expire"`
-}
-type Store struct {
-	EndPoint    string `json:"end_point"`
-	UseSSL      bool   `json:"use_ssl"`
-	AccessID    string `json:"access_id"`
-	SecretKey   string `json:"secret_key"`
-	Expire      uint8  `json:"expire"`
-	DefaultSize int64  `json:"default_size"`
-}
-type BackUp struct {
-	Addr string `json:"addr"`
-}
-type Logging struct {
-	File      string `json:"file"`
-	Level     string `json:"level"`
-	MaxAge    uint16 `json:"max_age"`
-	MaxSize   uint16 `json:"max_size"`
-	MaxBackUp uint16 `json:"max_backups"`
-}
 type Db struct {
-	Host     string `json:"host"`
-	Port     uint16 `json:"port"`
-	User     string `json:"user"`
-	Password string `json:"password"`
-	Name     string `json:"name"`
+	Host     string `yaml:"host"`
+	Name     string `yaml:"name"`
+	Port     int    `yaml:"port"`
+	User     string `yaml:"user"`
+	Password string `yaml:"password"`
 }
 
-// ManageServer UDP服务器配置信息
-type ManageServer struct {
-	ListenIP   string `json:"ListenIP"`
-	ListenPort uint16 `json:"ListenPort"`
+type Jwt struct {
+	Exp    int    `yaml:"exp"`
+	Iss    string `yaml:"iss"`
+	Sub    string `yaml:"sub"`
+	Secret string `yaml:"secret"`
 }
 
-// DRServer 第三方数权服务器配置信息
-type DRServer struct {
-	EndPoint         string `json:"endPoint"`
-	Authentication   string `json:"authentication"`
-	DelData          string `json:"delData"`
-	DrAccountInfo    string `json:"drAccountInfo"`
-	DrAccountSync    string `json:"drAccountSync"`
-	DrUserCreate     string `json:"drUserCreate"`
-	DrUserModify     string `json:"drUserModify"`
-	Encrypt          string `json:"encrypt"`
-	GetDrUserInfo    string `json:"getDrUserInfo"`
-	SelectUploadData string `json:"selectUploadData"`
-	UploadData       string `json:"uploadData"`
+type Cache struct {
+	Expire          int    `yaml:"expire"`
+	UseSsl          bool   `yaml:"use_ssl"`
+	AccessID        string `yaml:"access_id"`
+	EndPoint        string `yaml:"end_point"`
+	SecretAccessKey string `yaml:"secret_accessKey"`
 }
 
-// WaterServer 水印服务器配置信息
-type WaterServer struct {
-	EndPoint                            string `json:"endPoint"`
-	Grid                                string `json:"grid"`
-	Plain                               string `json:"plain"`
-	First                               string `json:"first"`
-	Third                               string `json:"third"`
-	ElectronicWatermarkUnderflow        string `json:"electronic_watermark_underflow"`
-	ElectronicWatermarkBright           string `json:"electronic_watermark_bright"`
-	ElectronicWatermarkUnderflowExtract string `json:"electronic_watermark_underflow_extract"`
-	GenerateStamps                      string `json:"generate_stamps"`
-	GenerateStampElipse                 string `json:"generate_stamp_elipse"`
-	StampCircleExtract                  string `json:"stamp_circle_extract"`
-	StampElipseExtract                  string `json:"stamp_elipse_extract"`
-	GenerateBsWaterMark                 string `json:"generate_bs_water_mark"`
-
-	WeakWaterMarkInsert  string `json:"weak_water_mark_insert"`
-	WeakWaterMarkExtract string `json:"weak_water_mark_extract"`
+type Store struct {
+	Expire          int    `yaml:"expire"`
+	UseSsl          bool   `yaml:"use_ssl"`
+	AccessID        string `yaml:"access_id"`
+	EndPoint        string `yaml:"end_point"`
+	DefaultSize     int    `yaml:"default_size"`
+	SecretAccessKey string `yaml:"secret_accessKey"`
 }
 
-// APIServer 应用服务器配置信息
-type APIServer struct {
-	ListenAddress string `json:"ListenAddress"`
-	EnableTLS     bool   `json:"EnableTLS"`
-	CertFile      string `json:"CertFile"`
-	KeyFile       string `json:"KeyFile"`
+type Backup struct {
+	Addr string `yaml:"addr"`
 }
 
-// SystemServer 服务信息表 here:https://sql2gorm.mccode.info/
-type SystemServer struct {
-	ID           int64     `gorm:"column:id;type:bigint(20);primary_key;AUTO_INCREMENT"` // 主键id
-	CreateBy     string    `gorm:"column:create_by;type:varchar(255)"`
-	CreateTime   time.Time `gorm:"column:create_time;type:datetime(6)"`   // 创建时间
-	CreateUserID int64     `gorm:"column:create_user_id;type:bigint(20)"` // 创建人id
-	IsDelete     int       `gorm:"column:is_delete;type:int(11)"`         // 1标识删除
-	Remark       string    `gorm:"column:remark;type:varchar(255)"`       // 备注
-	Status       int       `gorm:"column:status;type:int(4);default:0"`   // 状态
-	UpdateTime   time.Time `gorm:"column:update_time;type:datetime(6)"`   // 更新时间
-	Name         string    `gorm:"column:name;type:varchar(255)"`         // 名称
-	ConfigInfo   string    `gorm:"column:config_info;type:json"`
-	Type         int       `gorm:"column:type;type:int(11)"`      // 类型，字典system_server_type
-	Addr         string    `gorm:"column:addr;type:varchar(255)"` // 地址
+type Logging struct {
+	File      string `yaml:"file"`
+	Level     string `yaml:"level"`
+	MaxAge    int    `yaml:"max_age"`
+	MaxSize   int    `yaml:"max_size"`
+	MaxBackup int    `yaml:"max_backups"`
 }
 
-func JwtConfig() *Jwt {
-	return &cfg.Jwt
-}
-func CacheConfig() *Cache {
-	return &cfg.Cache
+type Dr struct {
+	DelData          string `yaml:"del-data"`
+	Encrypt          string `yaml:"encrypt"`
+	Endpoint         string `yaml:"endpoint"`
+	UploadData       string `yaml:"upload-data"`
+	DrUserCreate     string `yaml:"dr-user-create"`
+	DrUserModify     string `yaml:"dr-user-modify"`
+	DrAccountInfo    string `yaml:"dr-account-info"`
+	DrAccountSync    string `yaml:"dr-account-sync"`
+	GetDrUserInfo    string `yaml:"get-dr-user-info"`
+	Authentication   string `yaml:"authentication"`
+	SelectUploadData string `yaml:"select-upload-data"`
 }
 
-func StoreConfig() *Store {
-	return &cfg.Store
+type API struct {
+	KeyFile       string `yaml:"key-file"`
+	CertFile      string `yaml:"cert_file"`
+	EnableTLS     bool   `yaml:"enable-tls"`
+	ListenAddress string `yaml:"listen-address"`
 }
-func BackupConfig() *BackUp {
-	return &cfg.BackUp
+type Ws struct {
+	ListenAddress string `yaml:"listen-address"`
 }
-func LoggingConfig() *Logging {
-	return &cfg.Logging
+type Water struct {
+	Grid                                string `yaml:"grid"`
+	First                               string `yaml:"first"`
+	Plain                               string `yaml:"plain"`
+	Third                               string `yaml:"third"`
+	Protocol                            string `yaml:"protocol"`
+	EndPoint                            string `yaml:"end_point"`
+	GenerateStamps                      string `yaml:"generate-stamps"`
+	StampCircleExtract                  string `yaml:"stamp-circle-extract"`
+	StampElipseExtract                  string `yaml:"stamp-elipse-extract"`
+	GenerateStampElipse                 string `yaml:"generate-stamp-elipse"`
+	GenerateBsWaterMark                 string `yaml:"generate-bs-water-mark"`
+	WeakWaterMarkInsert                 string `yaml:"weak-water-mark-insert"`
+	WeakWaterMarkExtract                string `yaml:"weak-water-mark-extract"`
+	ElectronicWatermarkBright           string `yaml:"electronic-watermark-bright"`
+	ElectronicWatermarkUnderflow        string `yaml:"electronic-watermark-underflow"`
+	ElectronicWatermarkUnderflowExtract string `yaml:"electronic-watermark-underflow-extract"`
 }
-func DbConfig() *Db {
-	return &cfg.Db
+
+type Manage struct {
+	ListenAddr string `yaml:"listen-addr"`
+	ListenPort int    `yaml:"listen-port"`
 }
-func ManageServerConfig() *ManageServer {
-	return &cfg.ManageServer
-}
-func DRConfig() *DRServer {
-	return &cfg.DRServer
-}
-func APIConfig() *APIServer {
-	return &cfg.APIServer
+
+type Node struct {
+	NodeNumber     string `yaml:"node-number"`
+	NodeUnit       string `yaml:"node-unit"`
+	NodeDeploy     string `yaml:"node-deploy"`
+	NodeOper       string `yaml:"node-oper"`
+	NodeLoginCode  string `yaml:"node-login-code"`
+	NodePublicMd5  string `yaml:"node-public-md5"`
+	NodePrivateMd5 string `yaml:"node-private-md5"`
+	NodeAlgo       string `yaml:"node-algo"`
+	NodeStoreKey   string `yaml:"node-store-key"`
+	NodePlatform   string `yaml:"node-platform"`
 }

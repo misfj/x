@@ -5,9 +5,10 @@ import (
 	"coredx/log"
 	"encoding/json"
 	"fmt"
-	"github.com/go-resty/resty/v2"
 	"strings"
 	"time"
+
+	"github.com/go-resty/resty/v2"
 )
 
 var ipfs *IPFS
@@ -18,7 +19,7 @@ type IPFS struct {
 	peers      []string
 }
 
-func Init(conf *config.BackUp) error {
+func Init(conf *config.Backup) error {
 	client := resty.New()
 	client.SetTimeout(time.Second * 10)
 	ipfs = &IPFS{

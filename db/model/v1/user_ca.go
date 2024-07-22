@@ -1,26 +1,24 @@
 package v1
 
 import (
-	"gorm.io/gorm"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type UserCa struct {
-	Id         uint64    `gorm:"column:id;type:bigint(20) unsigned;primary_key;AUTO_INCREMENT;comment:记录ID" json:"id"`
-	CreateTime time.Time `gorm:"column:create_time;type:datetime(6);comment:创建时间;NOT NULL" json:"create_time"`
-	UpdateTime time.Time `gorm:"column:update_time;type:datetime(6);comment:更新时间" json:"update_time"`
-	IsDelete   string    `gorm:"column:is_delete;type:char(1);comment:1表示删除,0表示不删除" json:"is_delete"`
-	Remark     string    `gorm:"column:remark;type:varchar(255);comment:备注" json:"remark"`
-	Status     string    `gorm:"column:status;type:char(1);comment:状态(1表示可用,0表示禁用)" json:"status"`
-	//NickName   string    `gorm:"column:nick_name;type:varchar(50);comment:用户名;NOT NULL" json:"nick_name"`
-	UserId     uint64 `gorm:"column:user_id;type:bigint(20) unsigned;comment:用户ID(auth_user表里的id)"`
-	Public     string `gorm:"column:public;type:text;comment:用户公钥" json:"public"`
-	Private    string `gorm:"column:private;type:text;comment:用户私钥" json:"private"`
-	PublicMd5  string `gorm:"column:public_md5;type:varchar(32);comment:公钥md5" json:"public_md5"`
-	PrivateMd5 string `gorm:"column:private_md5;type:varchar(32);comment:私钥md5" json:"private_md5"`
-	StoreKey   string `gorm:"column:store_key;type:varchar(50);comment:sm2存储密码(rsa不需要存空)" json:"store_key"`
-	Algorithm  string `gorm:"column:algorithm;type:varchar(10);comment:算法" json:"algorithm"`
-	TimeStamp  int64  `gorm:"column:time_stamp;type:bigint(20);comment:证书时间戳"`
+	Id         uint64    `gorm:"column:id;type:bigint(20) unsigned;primary_key;AUTO_INCREMENT" json:"id"` // 数据id
+	CreateAt   time.Time `gorm:"column:create_at;type:datetime(3)" json:"create_at"`                      // 创建时间
+	UpdateAt   time.Time `gorm:"column:update_at;type:datetime(3)" json:"update_at"`                      // 更新时间
+	DeleteAt   time.Time `gorm:"column:delete_at;type:datetime(3)" json:"delete_at"`                      // 删除时间
+	UserId     time.Time `gorm:"column:user_id;type:bigint(20)" json:"user_id"`                           // 创建时间
+	Public     time.Time `gorm:"column:public;type:text" json:"public"`                                   // 公钥d
+	PublicMd5  time.Time `gorm:"column:public_md5;type:varchar(32)" json:"public_md5"`                    // 公钥md5
+	Private    time.Time `gorm:"column:private;type:text" json:"private"`                                 // 私钥
+	PrivateMd5 time.Time `gorm:"column:private_md5;type:varchar(32)" json:"private_md5"`                  // 私钥md5
+	Algo       time.Time `gorm:"column:algo;type:varchar(10)" json:"algo"`                                // 算法
+	StoreKey   time.Time `gorm:"column:store_key;type:varchar(32)" json:"store_key"`                      // 存储密码
+	TimeStamp  time.Time `gorm:"column:time_stamp;type:bigint(20)" json:"time_stamp"`                     // 时间戳
 }
 
 func (m *UserCa) TableName() string {
