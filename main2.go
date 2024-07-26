@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+
 	uuid "github.com/satori/go.uuid"
 )
 
-func main() {
+func maixn() {
 	// Creating UUID Version 4
 	// panic on error
 	var err error

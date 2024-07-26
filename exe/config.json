@@ -1,0 +1,19 @@
+{
+  "PlatConfig": {
+    "watermark-service": {
+      "ServerAddr": "123.60.56.112:9001"
+    }
+  },
+  "MinioConfig": {
+    "MinioEndpoint": "10.10.1.41:9000",
+    "MinioAccessKey": "LYVbwGtWft1T4Bdbjqq8",
+    "MinioSecretKey": "nAsq2o9Bc4EhSgVvLItIoEJDWTqS2zfOudZUjACi"
+  },
+  "DbConfig": {
+    "Host": "10.10.254.13",
+    "Port": 3307,
+    "Password": "9ijnBHU*@123",
+    "DbName": "nwyl",
+    "User": "root"
+  }
+}

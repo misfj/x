@@ -6,12 +6,17 @@ import (
 	"coredx/config"
 	"coredx/core"
 	"coredx/db"
+	"coredx/exe"
 	"coredx/log"
 	"coredx/store/cache"
 	"coredx/store/ipfs"
 	"coredx/store/minio"
+	"fmt"
+	"github.com/kardianos/osext"
 	"os"
 	"os/signal"
+	"path/filepath"
+	"strings"
 	"syscall"
 )
 
@@ -115,8 +120,26 @@ import (
 //			os.Exit(1)
 //		}
 //	}
-func main() {
+func init() {
 	config.Init("config.yaml", "private.key", "public.pub")
+	fmt.Println("------------------------------------------------")
+	dir := ""
+	var err error
+	//加载代理程序
+	if dir, err = osext.ExecutableFolder(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	//fmt.Println(config.Config.Watertwo)
+	//configJson := filepath.Join(dir, "exe", "config.json")
+	//fmt.Printf("waterProgram config  file:%s\n", configJson)
+	// args := []string{":9090", configJson}
+	//args := make([]string, 0, 2)
+	args := strings.Split(config.Config.Watertwo.Args, " ")
+	exe.Init(filepath.Join(dir, "exe", config.Config.Watertwo.Name), args)
+}
+func main() {
+
 	log.Init(config.GetLogging())
 	cache.Init(config.GetCache())
 	minio.Init(config.GetStore())
@@ -131,7 +154,7 @@ func main() {
 	}
 	//ctx 带两个值 plat代表平台地址(带了表示作为超级节点,不带表示作为平台) ws:(带参数表示作为平台,另外启动端口)
 	/*
-			平台:node-platform == "", ws !=""
+		平台:node-platform == "", ws !=""
 		超级节点:node-platform != "", ws ==""
 	*/
 	var ctx context.Context
@@ -150,4 +173,5 @@ func main() {
 	cancel()
 	server.Close()
 	server.Wait()
+
 }

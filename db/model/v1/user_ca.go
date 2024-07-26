@@ -2,8 +2,6 @@ package v1
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type UserCa struct {
@@ -25,32 +23,32 @@ func (m *UserCa) TableName() string {
 	return "user_ca"
 }
 
-func UserCaCreate(db *gorm.DB, userID uint64,
-	public string,
-	private string, publicMd5 string,
-	privateMd5 string, storeKey string, algorithm string, timeStamp int64) error {
-	var userCa UserCa
-	userCa.CreateTime = time.Now()
-	userCa.UpdateTime = time.Now()
-	userCa.IsDelete = notDelete
-	userCa.Remark = nullRemark
-	userCa.Status = normalStatus
-	//userCa.NickName = nickName
-	userCa.UserId = userID
-	userCa.Public = public
-	userCa.Private = private
-	userCa.PublicMd5 = publicMd5
-	userCa.PrivateMd5 = privateMd5
-	userCa.StoreKey = storeKey
-	userCa.Algorithm = algorithm
-	userCa.TimeStamp = timeStamp
-	return db.Create(&userCa).Error
-}
+// func UserCaCreate(db *gorm.DB, userID uint64,
+// 	public string,
+// 	private string, publicMd5 string,
+// 	privateMd5 string, storeKey string, algorithm string, timeStamp int64) error {
+// 	var userCa UserCa
+// 	userCa.CreateTime = time.Now()
+// 	userCa.UpdateTime = time.Now()
+// 	userCa.IsDelete = notDelete
+// 	userCa.Remark = nullRemark
+// 	userCa.Status = normalStatus
+// 	//userCa.NickName = nickName
+// 	userCa.UserId = userID
+// 	userCa.Public = public
+// 	userCa.Private = private
+// 	userCa.PublicMd5 = publicMd5
+// 	userCa.PrivateMd5 = privateMd5
+// 	userCa.StoreKey = storeKey
+// 	userCa.Algorithm = algorithm
+// 	userCa.TimeStamp = timeStamp
+// 	return db.Create(&userCa).Error
+// }
 
-func UserCaDeleteByUserIds(db *gorm.DB, userId uint64) error {
-	return db.Model(&UserCa{}).Where("user_id = ? and is_delete = ? ", userId, notDelete).Updates(map[string]interface{}{"is_delete": delete, "update_time": time.Now(),
-		"remark": "API删除"}).Error
-}
+// func UserCaDeleteByUserIds(db *gorm.DB, userId uint64) error {
+// 	return db.Model(&UserCa{}).Where("user_id = ? and is_delete = ? ", userId, notDelete).Updates(map[string]interface{}{"is_delete": delete, "update_time": time.Now(),
+// 		"remark": "API删除"}).Error
+// }
 
 //func UserCaFindPrivateKeyByUserId(db *gorm.DB, userId uint64) (string, error) {
 //	return "", fmt.Errorf("not found private key")

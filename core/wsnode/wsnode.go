@@ -5,6 +5,7 @@ import (
 	"coredx/config"
 	"coredx/core/wsnode/handle"
 	"coredx/log"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -99,7 +100,10 @@ func (wsNode *WsNode) Startup(ctx context.Context) error {
 		超级节点:node-platform != "", ws ==""
 	*/
 
+	fmt.Println(nodePlatformImpl, wsImpl)
 	if nodePlatformImpl == "" && wsImpl != "" {
+
+		fmt.Println("平台")
 		wsHandler := &handler{}
 		wsNode.server = &http.Server{
 			Addr:           wsImpl,
@@ -114,7 +118,7 @@ func (wsNode *WsNode) Startup(ctx context.Context) error {
 	}
 	if nodePlatformImpl != "" && wsImpl == "" {
 		//节点 主动连接平台
-
+		fmt.Println("节点")
 		timeoutCtx, _ := context.WithTimeout(context.Background(), time.Second*30)
 		dial := websocket.Dialer{}
 		conn, _, err := dial.DialContext(timeoutCtx, nodePlatformImpl, nil)
@@ -130,6 +134,9 @@ func (wsNode *WsNode) Startup(ctx context.Context) error {
 }
 
 func (wsNode *WsNode) Close() error {
+	if wsNode.server == nil {
+		return nil
+	}
 	wsNode.server.Shutdown(wsNode.ctx)
 	return nil
 }

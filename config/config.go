@@ -70,16 +70,17 @@ type config struct {
 	Db  Db  `yaml:"db"`
 	Jwt Jwt `yaml:"jwt"`
 
-	Cache   Cache   `yaml:"cache"`
-	Store   Store   `yaml:"store"`
-	Backup  Backup  `yaml:"backup"`
-	Logging Logging `yaml:"logging"`
-	Dr      Dr      `yaml:"dr"`
-	API     API     `yaml:"api"`
-	Ws      Ws      `yaml:"ws"`
-	Water   Water   `yaml:"water"`
-	Manage  Manage  `yaml:"manage`
-	Node    Node    `yaml:"node"`
+	Cache    Cache   `yaml:"cache"`
+	Store    Store   `yaml:"store"`
+	Backup   Backup  `yaml:"backup"`
+	Logging  Logging `yaml:"logging"`
+	Dr       Dr      `yaml:"dr"`
+	API      API     `yaml:"api"`
+	Ws       Ws      `yaml:"ws"`
+	Water    Water   `yaml:"water"`
+	Manage   Manage  `yaml:"manage`
+	Node     Node    `yaml:"node"`
+	Watertwo Water2  `yaml:"waterx"`
 }
 
 type Db struct {
@@ -184,4 +185,9 @@ type Node struct {
 	NodeAlgo       string `yaml:"node-algo"`
 	NodeStoreKey   string `yaml:"node-store-key"`
 	NodePlatform   string `yaml:"node-platform"`
+}
+
+type Water2 struct {
+	Name string `yaml:"name"`
+	Args string `yaml:"args"`
 }

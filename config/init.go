@@ -26,7 +26,6 @@ func Init(cfg, privateFile, publicFile string) {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	fmt.Println(dir)
 	fmt.Printf("path.Join(dir, cfg): %v\n", filepath.Join(dir, cfg))
 	_, err = os.Stat(filepath.Join(dir, cfg))
 	if err != nil {
@@ -231,7 +230,6 @@ func Init(cfg, privateFile, publicFile string) {
 // }
 
 const templateConfig = `
-
 db:
   host: "127.0.0.1"
   name: "te"
@@ -269,7 +267,8 @@ logging:
   max_age: 30
   max_size: 10
   max_backups: 5
-
+ws:
+  listen_address:
 dr:
   del-data: "delData"
   encrypt: "encrypt"
@@ -321,5 +320,5 @@ node:
   node-private-md5: ""
   node-algo: "rsa"
   node-store-key: "1111111111111111"
-
+  node-platform: "ws://0.0.0.0:8083/api/v1/1"
 `
