@@ -3,7 +3,7 @@ TARGET_FILE := config.yaml
 
 .PHONY: all build run clean conf
 
-all: build run
+all: clean  conf build run
 
 build:
 	@echo "Building $(BINARY_NAME)..."
@@ -31,6 +31,8 @@ conf:
 	@echo "  port: 3306" >> $(TARGET_FILE)
 	@echo "  user: \"root\"" >> $(TARGET_FILE)
 	@echo "  password: \"root\"" >> $(TARGET_FILE)
+	@echo "  maximum-pool-size: 20" >> $(TARGET_FILE)
+	@echo "  maximum-idle-size: 5" >> $(TARGET_FILE)
 	@echo "jwt:" >> $(TARGET_FILE)
 	@echo "  exp: 90" >> $(TARGET_FILE)
 	@echo "  iss: \"cored\"" >> $(TARGET_FILE)

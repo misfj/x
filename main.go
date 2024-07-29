@@ -12,12 +12,13 @@ import (
 	"coredx/store/ipfs"
 	"coredx/store/minio"
 	"fmt"
-	"github.com/kardianos/osext"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"strings"
 	"syscall"
+
+	"github.com/kardianos/osext"
 )
 
 // import (
@@ -122,7 +123,6 @@ import (
 //	}
 func init() {
 	config.Init("config.yaml", "private.key", "public.pub")
-	fmt.Println("------------------------------------------------")
 	dir := ""
 	var err error
 	//加载代理程序
@@ -130,16 +130,11 @@ func init() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	//fmt.Println(config.Config.Watertwo)
-	//configJson := filepath.Join(dir, "exe", "config.json")
-	//fmt.Printf("waterProgram config  file:%s\n", configJson)
-	// args := []string{":9090", configJson}
-	//args := make([]string, 0, 2)
 	args := strings.Split(config.Config.Watertwo.Args, " ")
-	exe.Init(filepath.Join(dir, "exe", config.Config.Watertwo.Name), args)
+	exe.Go(filepath.Join(dir, "exe", config.Config.Watertwo.Name), args)
 }
-func main() {
 
+func main() {
 	log.Init(config.GetLogging())
 	cache.Init(config.GetCache())
 	minio.Init(config.GetStore())
@@ -159,19 +154,45 @@ func main() {
 	*/
 	var ctx context.Context
 
-	ctx = context.WithValue(context.Background(), "node-platform", config.GetNode().NodePlatform)
-	ctx = context.WithValue(ctx, "ws", config.GetWs().ListenAddress)
+	ctx = context.WithValue(
+		context.Background(),
+		"node-platform",
+		config.GetNode().NodePlatform)
+
+	ctx = context.WithValue(
+		ctx,
+		"ws",
+		config.GetWs().ListenAddress)
 
 	newCtx, cancel := context.WithCancel(ctx)
 	server.Run(newCtx)
+	// defer func() {
+	// 	args := strings.Split(config.Config.Watertwo.Args, " ")
+	// 	log.Info("send close command to water proxy")
+	// 	exe.Exit(config.Config.Watertwo.Name, args)
+	// }()
 	// 处理SIGINT和SIGTERM信号
 	interrupt := make(chan os.Signal, 1)
-	signal.Notify(interrupt, syscall.SIGINT, syscall.SIGTERM)
+	signal.Notify(interrupt,
+		syscall.SIGINT,
+		syscall.SIGTERM,
+		syscall.SIGQUIT)
 
 	sig := <-interrupt
 	log.Info("recv signal:", sig)
+
 	cancel()
 	server.Close()
 	server.Wait()
+	//关闭协程加载的水印代理程序
+
+	// interrupt = make(chan os.Signal, 1)
+	// signal.Notify(interrupt,
+	// 	syscall.SIGINT,
+	// 	syscall.SIGTERM,
+	// 	syscall.SIGQUIT)
+
+	// sig = <-interrupt
+	// log.Info("recv signal:", sig)
 
 }

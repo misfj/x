@@ -84,11 +84,13 @@ type config struct {
 }
 
 type Db struct {
-	Host     string `yaml:"host"`
-	Name     string `yaml:"name"`
-	Port     int    `yaml:"port"`
-	User     string `yaml:"user"`
-	Password string `yaml:"password"`
+	Host            string `yaml:"host"`
+	Name            string `yaml:"name"`
+	Port            int    `yaml:"port"`
+	User            string `yaml:"user"`
+	Password        string `yaml:"password"`
+	MaximumPoolSize int    `yaml:"maximum_pool_size"`
+	MaximumIdleSize int    `yaml:"maximum_idle_size"`
 }
 
 type Jwt struct {

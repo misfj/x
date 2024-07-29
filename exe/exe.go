@@ -2,8 +2,11 @@ package exe
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"os/exec"
+	"strings"
+	"time"
 )
 
 // var mapExeList *MapExeList
@@ -96,7 +99,7 @@ import (
 // 	args := []string{":9090"}
 
 // }
-func Init(exeName string, args []string) {
+func Go(exeName string, args []string) {
 	waterlog, err := os.Create("water.log")
 	if err != nil {
 		fmt.Println(err)
@@ -104,17 +107,82 @@ func Init(exeName string, args []string) {
 	}
 
 	go func() {
+
 		cmd := exec.Command(exeName, args...)
 		cmd.Stdout = os.Stdout // 标准输出
 
 		// cmd.Stderr = os.Stderr // 标准错误
 		cmd.Stderr = waterlog
+		fmt.Println("命令执行成功")
 		err := cmd.Run()
 		if err != nil {
-			fmt.Printf("命令执行失败: %v\n", err)
+			fmt.Println("进程1:", cmd.Process.Pid)
+			fmt.Printf("命令执行失败: %v\n", err.Error())
+			// os.Exit(1)
+			return
 		} else {
 			fmt.Println("命令执行成功")
 		}
 	}()
 
+}
+
+const WaterKillMsg = `{
+	"Command": "serviceControl",
+	"ID": 0,
+	"Payload": {
+	  "Action": 1,
+	  "Config": {
+		"PlatConfig": {
+		  "watermark-service": {
+			"ServerAddr": "123.60.55.112:9001"
+		  },
+		  "ai-service": {
+			"ServerAddr": "123.60.55.112:9001"
+		  }
+		},
+		"MinioConfig": {
+		  "MinioEndpoint": "10.10.1.41:9000",
+		  "MinioAccessKey": "LYVbwGtWft1T4Bdbjqq8",
+		  "MinioSecretKey": "nAsq2o9Bc4EhSgVvLItIoEJDWTqS2zfOudZUjACi"
+		},
+		"DbConfig": {
+		  "Host": "10.10.1.41",
+		  "Port": 3307,
+		  "Password": "9ijnBHU*@123",
+		  "DbName": "nwyl",
+		  "User": "root"
+		}
+	  }
+	}
+   }`
+
+func Exit(exeName string, args []string) {
+	str := strings.Split(args[0], ":")
+	targetAddr := fmt.Sprintf("0.0.0.0:%s", str[1])
+	udpAddr, err := net.ResolveUDPAddr("udp", targetAddr)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	fmt.Println("target:", targetAddr)
+	conn, err := net.DialUDP("udp", nil, udpAddr)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	defer conn.Close()
+	_, err = conn.Write([]byte(WaterKillMsg))
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	buf := make([]byte, 4096)
+	fmt.Println("x")
+
+	_, err = conn.Read(buf)
+	fmt.Println("recv:", string(buf), err)
+
+	time.Sleep(time.Second * 5)
+	fmt.Println("recv:", string(buf), err)
 }

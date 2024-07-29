@@ -1,9 +1,23 @@
 BINARY_NAME := main
 TARGET_FILE := config.yaml
-
+Kill_WaterProxy_File_Template := waterKillTemplate.json
+GO_VERSION := go1.22.1.linux-amd64.tar.gz
+GO_URL := https://studygolang.com/dl/golang/$(GO_VERSION)
+GOROOT := /usr/local/go
+GO_BIN := $(GOROOT)/bin
 .PHONY: all build run clean conf
 
-all: build run
+all: clean  conf build run
+
+install:
+	@wget $(GO_URL)
+	@tar -C /usr/local -zxvf $(GO_VERSION)
+	@echo "export GOROOT=$(GOROOT)" >> /etc/profile
+	@echo "export PATH=\$$PATH:$(GO_BIN)" >> /etc/profile
+	@source /etc/profile
+	@go env
+	@go env -w GOPROXY=https://goproxy.cn,direct
+	@rm -f $(GO_VERSION)
 
 build:
 	@echo "Building $(BINARY_NAME)..."
@@ -21,7 +35,8 @@ clean:
 	rm -f  config.yaml
 	rm -rf .idea/
 	rm  -rf water.log
-
+kill:
+	@echo '{"Command": "serviceControl", "ID": 0, "Payload": {"Action": 1, "Config": {"PlatConfig": {"watermark-service": {"ServerAddr": "123.60.55.112:9001"},"ai-service": {"ServerAddr": "123.60.55.112:9001"}},"MinioConfig": {"MinioEndpoint": "10.10.1.41:9000","MinioAccessKey": "LYVbwGtWft1T4Bdbjqq8","MinioSecretKey": "nAsq2o9Bc4EhSgVvLItIoEJDWTqS2zfOudZUjACi"},"DbConfig": {"Host": "10.10.1.41","Port": 3307,"Password": "9ijnBHU*@123","DbName": "nwyl","User": "root"}}}}' > $(Kill_WaterProxy_File_Template)
 conf:
 	@echo "Generating $(TARGET_FILE)..."
 	@rm -f $(TARGET_FILE)
@@ -30,7 +45,9 @@ conf:
 	@echo "  name: \"te\"" >> $(TARGET_FILE)
 	@echo "  port: 3306" >> $(TARGET_FILE)
 	@echo "  user: \"root\"" >> $(TARGET_FILE)
-	@echo "  password: \"root\"" >> $(TARGET_FILE)
+	@echo "  maximum-pool-size: \"20\"" >> $(TARGET_FILE)
+	@echo "  maximum-idle-size: \"5\"" >> $(TARGET_FILE)
+
 	@echo "jwt:" >> $(TARGET_FILE)
 	@echo "  exp: 90" >> $(TARGET_FILE)
 	@echo "  iss: \"cored\"" >> $(TARGET_FILE)

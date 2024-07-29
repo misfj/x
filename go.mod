@@ -5,11 +5,11 @@ go 1.22.3
 require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-resty/resty/v2 v2.13.1
+	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
 	github.com/minio/minio-go/v7 v7.0.72
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/satori/go.uuid v1.2.0
 	github.com/tidwall/gjson v1.17.1
 	github.com/tjfoc/gmsm v1.4.1
 	github.com/wumansgy/goEncrypt v1.1.0
