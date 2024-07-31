@@ -3,8 +3,6 @@ package api
 import (
 	"context"
 	"coredx/config"
-	"coredx/core/api/middware"
-	"coredx/core/node"
 	"coredx/log"
 	"crypto/md5"
 	"encoding/hex"
@@ -51,7 +49,6 @@ func New(config *config.API) *Server {
 }
 
 func (s *Server) Init() error {
-	node.NewGlobalNodes()
 	s.initRoute()
 
 	return nil
@@ -63,7 +60,6 @@ func (s *Server) Name() string {
 
 func (s *Server) Startup(ctx context.Context) (err error) {
 	s.ctx = ctx
-	middware.Init(s.ctx)
 
 	log.Info("APIServer startup...")
 	log.Debugf("api address:%s", s.config.ListenAddress)

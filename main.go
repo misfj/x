@@ -6,19 +6,13 @@ import (
 	"coredx/config"
 	"coredx/core"
 	"coredx/db"
-	"coredx/exe"
 	"coredx/log"
 	"coredx/store/cache"
 	"coredx/store/ipfs"
 	"coredx/store/minio"
-	"fmt"
 	"os"
 	"os/signal"
-	"path/filepath"
-	"strings"
 	"syscall"
-
-	"github.com/kardianos/osext"
 )
 
 // import (
@@ -123,19 +117,20 @@ import (
 //	}
 func init() {
 	config.Init("config.yaml", "private.key", "public.pub")
-	dir := ""
-	var err error
-	//加载代理程序
-	if dir, err = osext.ExecutableFolder(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	args := strings.Split(config.Config.Watertwo.Args, " ")
-	exe.Go(filepath.Join(dir, "exe", config.Config.Watertwo.Name), args)
+	//dir := ""
+	//var err error
+	////加载代理程序
+	//if dir, err = osext.ExecutableFolder(); err != nil {
+	//	fmt.Println(err)
+	//	os.Exit(1)
+	//}
+	//args := strings.Split(config.Config.Watertwo.Args, " ")
+	//exe.Go(filepath.Join(dir, "exe", config.Config.Watertwo.Name), args)
 }
 
 func main() {
 	log.Init(config.GetLogging())
+	defer log.Sync()
 	cache.Init(config.GetCache())
 	minio.Init(config.GetStore())
 	ipfs.Init(config.GetBack())

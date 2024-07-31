@@ -1,17 +1,25 @@
-BINARY_NAME := main
+BINARY_NAME := main.exe
 TARGET_FILE := config.yaml
+Kill_WaterProxy_File_Template := waterKillTemplate.json
+GO_VERSION := go1.22.1.linux-amd64.tar.gz
+GO_URL := https://studygolang.com/dl/golang/$(GO_VERSION)
+# GOROOT := /usr/local/go
+# GO_BIN := $(GOROOT)/bin
+OS := $(shell uname -s)
+ifeq ($(OS),Linux)
+BINARY_NAME = main
+endif 
 
 .PHONY: all build run clean conf
-
 all: clean  conf build run
 
 build:
 	@echo "Building $(BINARY_NAME)..."
-	@go build -o $(BINARY_NAME).exe main.go || exit 1
+	@go build -o $(BINARY_NAME) main.go || exit 1
 
 run: build
-	@echo "Running $(BINARY_NAME).exe..."
-	@./$(BINARY_NAME).exe || exit 1
+	@echo "Running $(BINARY_NAME)..."
+	@./$(BINARY_NAME) || exit 1
 
 clean:
 	@echo "Cleaning up..."
@@ -26,8 +34,8 @@ conf:
 	@echo "Generating $(TARGET_FILE)..."
 	@rm -f $(TARGET_FILE)
 	@echo "db:" >> $(TARGET_FILE)
-	@echo "  host: \"127.0.0.1\"" >> $(TARGET_FILE)
-	@echo "  name: \"te\"" >> $(TARGET_FILE)
+	@echo "  host: \"192.168.1.149\"" >> $(TARGET_FILE)
+	@echo "  name: \"nwyl\"" >> $(TARGET_FILE)
 	@echo "  port: 3306" >> $(TARGET_FILE)
 	@echo "  user: \"root\"" >> $(TARGET_FILE)
 	@echo "  password: \"root\"" >> $(TARGET_FILE)

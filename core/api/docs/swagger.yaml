@@ -1,0 +1,48 @@
+definitions:
+  request.AppLoginRequest:
+    properties:
+      app_account:
+        type: string
+      app_name:
+        type: string
+      app_password:
+        type: string
+    type: object
+  response.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      msg:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /v1/app/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.AppLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 同步API
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 业务应用登录
+      tags:
+      - 业务应用登录
+swagger: "2.0"

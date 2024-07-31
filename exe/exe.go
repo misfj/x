@@ -116,7 +116,6 @@ func Go(exeName string, args []string) {
 		fmt.Println("命令执行成功")
 		err := cmd.Run()
 		if err != nil {
-			fmt.Println("进程1:", cmd.Process.Pid)
 			fmt.Printf("命令执行失败: %v\n", err.Error())
 			// os.Exit(1)
 			return
@@ -186,3 +185,5 @@ func Exit(exeName string, args []string) {
 	time.Sleep(time.Second * 5)
 	fmt.Println("recv:", string(buf), err)
 }
+
+//异步机制  当某些接口在内部执行特别耗时的时候(比如说水印接口在对大文件进行水印添加的时候,会特别耗时,),

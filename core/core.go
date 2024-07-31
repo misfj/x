@@ -2,6 +2,8 @@ package core
 
 import (
 	"context"
+	"coredx/config"
+	"coredx/core/api"
 	"coredx/core/wsnode"
 	"coredx/log"
 	"sync"
@@ -23,11 +25,11 @@ func New() *Core {
 	c := Core{
 		servers: make(map[string]Server),
 	}
-	// apiServer := api.New(config.GetApi())
+	apiServer := api.New(config.GetApi())
 	// vnodeServer := node.NewVNodeServer(config.GetApi().ListenAddress)
 	wsNode := wsnode.NewWsNode()
 	c.servers[wsNode.Name()] = wsNode
-	// c.servers[apiServer.Name()] = apiServer
+	c.servers[apiServer.Name()] = apiServer
 	// c.servers[vnodeServer.Name()] = vnodeServer
 	return &c
 }

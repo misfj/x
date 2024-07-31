@@ -19,3 +19,15 @@
 2024-07-22 14:50:56.69818 ERROR ipfs/ipfs.go:32 Post "http://10.10.254.11:5001/api/v0/swarm/peers": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
 2024-07-22 14:51:38.692711 ERROR ipfs/ipfs.go:32 Post "http://10.10.254.11:5001/api/v0/swarm/peers": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
 2024-07-22 14:56:31.74296 ERROR ipfs/ipfs.go:32 Post "http://10.10.254.11:5001/api/v0/swarm/peers": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+2024-07-30 10:02:09.270478 INFO db/db.go:37 initial mysql  success
+2024-07-30 10:02:09.273734 INFO wsnode/wsnode.go:97 1f5c6f0ac8a3ce85aa4b19181470a347
+2024-07-30 10:02:09.274312 ERROR wsnode/wsnode.go:126 dial tcp 0.0.0.0:8083: connectex: No connection could be made because the target machine actively refused it.
+2024-07-30 10:07:24.665042 INFO x/main.go:182 recv signal:interrupt
+2024-07-30 10:46:20.263265 INFO db/db.go:50 initial mysql  success
+2024-07-30 10:46:20.266887 INFO wsnode/wsnode.go:97 1f5c6f0ac8a3ce85aa4b19181470a347
+2024-07-30 10:46:20.267404 ERROR wsnode/wsnode.go:126 dial tcp 0.0.0.0:8083: connectex: No connection could be made because the target machine actively refused it.
+2024-07-30 10:46:28.001739 INFO x/main.go:182 recv signal:interrupt
+2024-07-30 10:54:58.992935 INFO db/db.go:50 initial mysql  success
+2024-07-30 10:54:58.996613 INFO wsnode/wsnode.go:97 1f5c6f0ac8a3ce85aa4b19181470a347
+2024-07-30 10:54:58.997641 ERROR wsnode/wsnode.go:126 dial tcp 0.0.0.0:8083: connectex: No connection could be made because the target machine actively refused it.
+2024-07-30 10:55:02.20253 INFO x/main.go:184 recv signal:interrupt

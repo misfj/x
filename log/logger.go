@@ -2,6 +2,7 @@ package log
 
 import (
 	"coredx/config"
+	// "coredx/log"
 	"os"
 	"strings"
 	"time"
@@ -132,4 +133,10 @@ func (ew *encoderWrapper) EncodeEntry(entry zapcore.Entry, field []zapcore.Field
 	buf.Reset()
 	buf.Write([]byte(bs))
 	return buf, nil
+}
+
+func Sync() {
+	if err := DefaultLogger.sugar.Sync(); err != nil {
+		DefaultLogger.Error(err)
+	}
 }
