@@ -1,94 +1,142 @@
 package middleware
 
-// const (
-// 	expire_msg    = "token is expired"
-// 	token_illegal = "that's not even a token"
-// )
+import (
+	"coredx/config"
+	"coredx/log"
+	"errors"
+	"fmt"
+	"net/http"
+	"strings"
+	"time"
 
-// func Token() gin.HandlerFunc {
-// 	return func(ctx *gin.Context) {
-// 		token := ctx.Request.Header.Get("token")
-// 		claims, err := ParseToken(token)
-// 		if err != nil {
-// 			response.Response(http.StatusForbidden, err.Error(), "", ctx)
-// 			ctx.Abort()
-// 			return
-// 		}
-// 		log.Debugf("claims:%v", claims)
-// 		//用claims的用户名和密码去数据库进行比对
-// 		//直接通过
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
+)
 
-// 		if verify(claims.UserName, claims.Issuer, claims.Subject) {
-// 			if claims.UserName == "internal" {
-// 				ctx.Next()
-// 			} else {
-// 				//todo 查询数据库
-// 				response.Response(http.StatusForbidden, "not allow", "", ctx)
-// 				ctx.Abort()
-// 				return
-// 			}
+const authorizationHeader = "Authorization"
 
-// 		} else {
-// 			response.Response(http.StatusForbidden, "verify failed", "", ctx)
-// 			ctx.Abort()
-// 			return
-// 		}
-// 	}
-// }
+var (
+	TokenExpired     = errors.New("token已过期,请重新登录。")
+	TokenNotValidYet = errors.New("token无效,请重新登录。")
+	TokenMalformed   = errors.New("token不正确,请重新登录。")
+	TokenInvalid     = errors.New("这不是一个token,请重新登录。")
+)
 
-// type MyClaims struct {
-// 	UserName             string
-// 	jwt.RegisteredClaims // 注意!这是jwt-go的v4版本新增的，原先是jwt.StandardClaims
-// }
+func Auth() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		log.Debug("----------------进入jwt------------------")
+		token, err := getJwtFromHeader(c)
+		if err != nil {
+			log.Error(err)
+			c.JSON(http.StatusOK, gin.H{
+				"status":  403,
+				"message": "no tiken",
+			})
+			c.Abort()
+			fmt.Println("are you ok")
+			return
+			//fmt.Println("abort")
+			//return
+		}
+		fmt.Println("are you ok")
+		claim, err := ParseToken(token, config.GetJwt().Secret)
+		if err != nil {
+			log.Error(err)
+			c.Abort()
+			return
+		}
+		if errors.Is(claim.Valid(), nil) {
+			c.Set("AppName", claim.AppName)
+			log.Debugf("jwt get appName:%s", claim.AppName)
+			//todo 加一层数据库token验证
+			c.Next()
+			log.Debug("----------------离开jwt------------------")
 
-// // var MySecret []byte
-// //
-// //	func Secret() jwt.Keyfunc {
-// //		return func(token *jwt.Token) (interface{}, error) {
-// //			return MySecret, nil // 这是我的secret
-// //		}
-// //	}
-// func GenerateToken(exp int, iss string, sub string, userName string) (tokenString string, err error) {
-// 	claim := MyClaims{
-// 		UserName: userName,
-// 		RegisteredClaims: jwt.RegisteredClaims{
-// 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(exp) * time.Hour * time.Duration(1))), // 过期时间3小时
-// 			IssuedAt:  jwt.NewNumericDate(time.Now()),                                                        // 签发时间
-// 			NotBefore: jwt.NewNumericDate(time.Now()),                                                        // 生效时间
-// 			Issuer:    iss,
-// 			Subject:   sub,
-// 		}}
-// 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim) // 使用HS256算法
-// 	tokenString, err = token.SignedString(MySecret)
-// 	return tokenString, err
-// }
+		} else if errors.Is(err, jwt.ErrTokenMalformed) {
+			c.JSON(http.StatusForbidden, gin.H{
+				"code":    403,
+				"message": TokenMalformed.Error(),
+				"data":    "",
+			})
+			c.Abort()
+			return
+			// return TokenMalformed
+		} else if errors.Is(err, jwt.ErrTokenExpired) || errors.Is(err, jwt.ErrTokenNotValidYet) {
+			c.JSON(http.StatusForbidden, gin.H{
+				"code":    403,
+				"message": TokenExpired.Error(),
+				"data":    "",
+			})
+			c.Abort()
+			return
 
-// func ParseToken(tokenss string) (*MyClaims, error) {
-// 	token, err := jwt.ParseWithClaims(tokenss, &MyClaims{}, Secret())
-// 	if err != nil {
-// 		var ve *jwt.ValidationError
-// 		if errors.As(err, &ve) {
-// 			if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-// 				return nil, errors.New(token_illegal)
-// 			} else if ve.Errors&jwt.ValidationErrorExpired != 0 {
-// 				return nil, errors.New(expire_msg)
-// 			} else if ve.Errors&jwt.ValidationErrorNotValidYet != 0 {
-// 				return nil, errors.New("token not active yet")
-// 			} else {
-// 				return nil, errors.New("couldn't handle this token")
-// 			}
-// 		}
-// 	}
-// 	if claims, ok := token.Claims.(*MyClaims); ok && token.Valid {
-// 		return claims, nil
-// 	}
-// 	return nil, errors.New("couldn't handle this token")
-// }
-// func verify(username, iss, sub string) bool {
-// 	//if model.QueryByUsername(mysql.NwlyDB, username) == nil {
-// 	//	return iss == config.JwtConfig().Iss && sub == config.JwtConfig().Sub
-// 	//} else {
-// 	//	return false
-// 	//}
-// 	return iss == config.JwtConfig().Iss && sub == config.JwtConfig().Sub
-// }
+		} else if errors.Is(err, jwt.ErrTokenSignatureInvalid) {
+			c.JSON(http.StatusForbidden, gin.H{
+				"code":    403,
+				"message": TokenInvalid.Error(),
+				"data":    "",
+			})
+			c.Abort()
+			return
+		} else {
+			c.JSON(http.StatusForbidden, gin.H{
+				"code":    403,
+				"message": TokenNotValidYet.Error(),
+				"data":    "",
+			})
+			c.Abort()
+			return
+		}
+		//fmt.Println("无语")
+	}
+}
+
+func getJwtFromHeader(c *gin.Context) (string, error) {
+	aHeader := c.Request.Header.Get(authorizationHeader)
+	if len(aHeader) == 0 {
+		return "", fmt.Errorf("token is empty")
+	}
+	strs := strings.SplitN(aHeader, " ", 2)
+	if len(strs) != 2 || strs[0] != "Bearer" {
+		return "", fmt.Errorf("token 不符合规则")
+	}
+	return strs[1], nil
+}
+
+type CustomClaims struct {
+	AppName string `json:"app_name"`
+	jwt.RegisteredClaims
+}
+
+func BuildClaims(exp time.Time, appName string) *CustomClaims {
+	return &CustomClaims{
+		AppName: appName,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(exp),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			Issuer:    config.GetJwt().Iss,
+		},
+	}
+}
+
+// GenToken 生成jwt token
+func GenToken(c *CustomClaims, secretKey string) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
+	ss, err := token.SignedString([]byte(secretKey))
+	return ss, err
+}
+
+// ParseToken 解析jwt token
+func ParseToken(jwtStr, secretKey string) (*CustomClaims, error) {
+	token, err := jwt.ParseWithClaims(jwtStr, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(secretKey), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
+		return claims, err
+	} else {
+		return nil, err
+	}
+}

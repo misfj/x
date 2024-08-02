@@ -2,11 +2,8 @@ package middleware
 
 import (
 	"bytes"
-	"context"
-	"coredx/db"
-	"coredx/db/dal/query"
+	"coredx/db/dal/model"
 	"coredx/log"
-	"encoding/json"
 	"fmt"
 	"io"
 	"strings"
@@ -15,107 +12,160 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// ReqLogger 记录每次请求的请求信息和响应信息
+// Logger 记录每次请求的请求信息和响应信息
+
 func Logger() gin.HandlerFunc {
 	return func(c *gin.Context) {
-
-		//AppID := 0
-		//ServiceType := ""
-		//ReqURL := ""
-		//Method := ""
-		//RemoteIP := ""
-		//ReqContent := ""
-		//ResMsg := ""
-		//ResSize := ""
-		//ResErr := ""
+		log.Debug("-----------------------进入logger-------------------")
 		// 请求前
 		t := time.Now()
 		reqPath := c.Request.URL.Path
 		method := c.Request.Method
 		ip := c.ClientIP()
-		//rawQuery := c.Request.URL.RawQuery
+		rawQuery := c.Request.URL.RawQuery
 		// JSON和FORM表单打印请求的Body, 其他内容类型，比如文件上传不打印
+		var requestBody string
+		var requestBody2 string
 		contentType := c.GetHeader("Content-Type")
 		if contentType != "" &&
 			(strings.HasPrefix(contentType, "application/json") ||
 				strings.HasPrefix(contentType, "application/x-www-form-urlencoded")) {
-			log.Debugf("request type:%s\n", contentType)
 			requestBody, err := io.ReadAll(c.Request.Body)
 			if err != nil {
-				log.Debugf("read body error:%s\n", err.Error())
 				requestBody = []byte{}
 			}
+			log.Debugf("请求体:%s", requestBody)
+			requestBody2 = string(requestBody)
 			c.Request.Body = io.NopCloser(bytes.NewBuffer(requestBody))
 		}
-		log.Debugf("request path:%s\n", reqPath)
-		//
-		log.Debugf("请求路径:%s\n", reqPath)
-		var reqMsg []byte
-		var reqMsgErr error
-		reqMsg, reqMsgErr = io.ReadAll(c.Request.Body)
-		if reqMsgErr != nil {
-			reqMsg = []byte(reqMsgErr.Error())
-		}
-		reqLog := fmt.Sprintf("host:%s %s %s start", ip, method, reqPath)
-		log.Debugf("reqLog :%s, body:%s", reqLog, string(reqMsg))
-		reqMap := make(map[string]interface{})
-		_ = json.Unmarshal(reqMsg, &reqMap)
-		app_name := ""
-		ok := false
-		log.Debugf("map:%v\n", reqMap)
-		if app_name, ok = reqMap["app_name"].(string); !ok {
-			log.Error("no app_name field")
-			c.Abort()
-		}
-		if strings.EqualFold(reqPath, "/v1/app/login") {
-			//根据应用名称查询数据库
-			if app_name != "" {
-				appInfo, err := query.Use(db.GDB).AppInfo.WithContext(context.Background()).Where(query.AppInfo.AppName.Eq(app_name)).Debug().First()
-				if err != nil {
-					log.Error(err)
-					c.Abort()
-				}
-				log.Debugf("appInfo:%v error:%v\n", appInfo, err)
-				log.Debug(appInfo.DeleteAt == time.Time{})
-				//appInfo, err := query.Use(db.GDB).AppInfo.WithContext(context.Background()).
-				if err != nil {
-					log.Error(err)
-				}
-			}
-
-		} else {
-			fmt.Println(1111)
-		}
-
+		log.Info(fmt.Sprintf("host:%s %s %s start", ip, method, reqPath), "query", rawQuery, "body", requestBody)
+		log.Debugf("请求体:%s", requestBody2)
 		writer := responseBodyWriter{
 			ResponseWriter: c.Writer,
 			body:           &bytes.Buffer{},
 		}
+		//将需要的数据放入ctx
+		c.Set("req_url", reqPath)
+		c.Set("method", method)
+		c.Set("remote_ip", ip)
+		c.Set("req_content", requestBody2)
+		//newCtx := context.WithValue(c, "", "")
 		c.Writer = writer
 		c.Next()
-		// 请求后
+		log.Debug("-----------------------离开logger-------------------")
+		c.Set("res_msg", writer.body.String())
+		c.Set("res_size", writer.Size())
 		latency := time.Since(t).Microseconds()
-		log.Debugf(fmt.Sprintf("host:%s %s %s end", ip, method, reqPath), "cost/us", latency)
-		log.Debugf("Status Code:%d\n", c.Writer.Status())
-		log.Debugf("Status Code:%d\n", c.Writer.Size())
-		bd, _ := io.ReadAll(writer.body)
-		log.Debugf("Response Body:%s\n", string(bd))
-
-		//query.Use(db.GDB).AppLog.Create(&model.AppLog{
-		//	CreateAt:    time.Now(),
-		//	UpdateAt:    time.Now(),
-		//	DeleteAt:    nil,
-		//	AppID:       0,
-		//	ServiceType: "",
-		//	ReqURL:      "",
-		//	Method:      "",
-		//	RemoteIP:    "",
-		//	ReqContent:  "",
-		//	ResMsg:      "",
-		//	ResSize:     0,
-		//	ResErr:      "",
-		//})
+		c.Set("cost", latency)
+		matchLogger(reqPath, c)
+		// 请求后
+		log.Info(fmt.Sprintf("host:%s %s %s end", ip, method, reqPath), "cost/us", latency)
 	}
+}
+
+func matchLogger(path string, newCtx *gin.Context) (err error) {
+	log.Debugf("进入path:%s", path)
+	switch path {
+	case "/v1/app/register":
+		//newCtx 有AppName
+		if appName, ok := newCtx.Value("AppName").(string); ok {
+			app, err := model.AppInfoQuery.FindByAppName(appName)
+			if err != nil {
+				newCtx.Set("res_err", err.Error())
+				newCtx.Set("app_id", 0)
+				newCtx.Set("service_type", "error")
+			} else {
+				newCtx.Set("res_err", "")
+				newCtx.Set("app_id", app.ID)
+				//在日志表有一个服务类别的字段,但是在该url记录成注册接口即可(其他接口正常填智能,数权等服务)
+				newCtx.Set("service_type", "平台注册业务应用服务")
+			}
+			log.Debugf("取出名称:%s", appName)
+		}
+	case "/v1/app/account/bind":
+		if appName, ok := newCtx.Value("AppName").(string); ok {
+			app, err := model.AppInfoQuery.FindByAppName(appName)
+			if err != nil {
+				newCtx.Set("res_err", err.Error())
+				newCtx.Set("app_id", 0)
+				newCtx.Set("service_type", "error")
+			} else {
+				newCtx.Set("res_err", "")
+				newCtx.Set("app_id", app.ID)
+				//在日志表有一个服务类别的字段,但是在该url记录成注册接口即可(其他接口正常填智能,数权等服务)
+				newCtx.Set("service_type", "业务应用用户账号存储")
+			}
+			log.Debugf("取出名称:%s", appName)
+		}
+	case "/v1/app/user/register":
+		if appName, ok := newCtx.Value("AppName").(string); ok {
+			app, err := model.AppInfoQuery.FindByAppName(appName)
+			if err != nil {
+				newCtx.Set("res_err", err.Error())
+				newCtx.Set("app_id", 0)
+				newCtx.Set("service_type", "error")
+			} else {
+				log.Debugf("根据应用名称查询的应用信息:%v", app)
+				newCtx.Set("res_err", "")
+				newCtx.Set("app_id", app.ID)
+				//在日志表有一个服务类别的字段,但是在该url记录成注册接口即可(其他接口正常填智能,数权等服务)
+				newCtx.Set("service_type", "业务应用代理用户进行主权账户注册")
+			}
+			log.Debugf("取出名称:%s", appName)
+		}
+	case "/v1/app/info":
+		if appName, ok := newCtx.Value("AppName").(string); ok {
+			app, err := model.AppInfoQuery.FindByAppName(appName)
+			if err != nil {
+				newCtx.Set("res_err", err.Error())
+				newCtx.Set("app_id", 0)
+				newCtx.Set("service_type", "error")
+			} else {
+				log.Debugf("根据应用名称查询的应用信息:%v", app)
+				newCtx.Set("res_err", "")
+				newCtx.Set("app_id", app.ID)
+				//在日志表有一个服务类别的字段,但是在该url记录成注册接口即可(其他接口正常填智能,数权等服务)
+				newCtx.Set("service_type", "业务应用代理用户进行主权账户注册")
+			}
+			log.Debugf("取出名称:%s", appName)
+		}
+	}
+	appID, _ := newCtx.Get("app_id")
+	serviceType, _ := newCtx.Get("service_type")
+	reqUrl, _ := newCtx.Get("req_url")
+	method, _ := newCtx.Get("method")
+	remoteIP, _ := newCtx.Get("remote_ip")
+	reqContent, _ := newCtx.Get("req_content")
+	resMsg, _ := newCtx.Get("res_msg")
+	resSize, _ := newCtx.Get("res_size")
+	resErr, _ := newCtx.Get("res_err")
+	cost, _ := newCtx.Get("cost")
+	appIDuint64 := appID.(uint)
+	serviceTypeString := serviceType.(string)
+	reqUrlString := reqUrl.(string)
+	methodString := method.(string)
+	remoteIPString := remoteIP.(string)
+	reqContentString := reqContent.(string)
+	resMsgString := resMsg.(string)
+	resSizeInt32 := resSize.(int)
+	resErrString := resErr.(string)
+	costInt64, _ := cost.(int64)
+	err = model.AppLogQuery.Create(&model.AppLog{
+		AppID:       int64(appIDuint64),
+		ServiceType: serviceTypeString,
+		ReqURL:      reqUrlString,
+		Method:      methodString,
+		RemoteIP:    remoteIPString,
+		ReqContent:  reqContentString,
+		ResMsg:      resMsgString,
+		ResSize:     int32(resSizeInt32),
+		ResErr:      resErrString,
+		Cost:        costInt64,
+	})
+	if err != nil {
+		log.Error(err)
+	}
+	return nil
 }
 
 type responseBodyWriter struct {

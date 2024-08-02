@@ -2,7 +2,7 @@ package db
 
 import (
 	"coredx/config"
-	"coredx/db/dal/query"
+	"coredx/db/dal/model"
 	"coredx/log"
 	"fmt"
 	stdlogger "log"
@@ -47,5 +47,11 @@ func Init(conf *config.Db) {
 	sqlDb.SetMaxOpenConns(conf.MaximumPoolSize)
 	sqlDb.SetMaxIdleConns(conf.MaximumIdleSize)
 	log.Info("initial mysql  success")
-	query.SetDefault(GDB)
+	model.NewAppInfoDao(GDB)
+	model.NewAppLogDao(GDB)
+	model.NewUserInfoDao(GDB)
+	model.NewUserCaDao(GDB)
+	model.NewAppTokenDao(GDB)
+	model.NewUserAccountDao(GDB)
+
 }

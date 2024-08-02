@@ -27,7 +27,22 @@ func HS256(data []byte) string {
 	sum256 := sha256.Sum256(data)
 	return hex.EncodeToString(sum256[:])
 }
-func IslegalError(public string, private string) error {
+func GenerateRsaLoop(loopCount int) (keyPair rsa.RsaKey, err error) {
+	for i := 0; i < loopCount; i++ {
+		keyPair, err = rsa.GenerateRsaKeyBase64(2048)
+		if err == nil {
+			break
+		} else {
+			continue
+		}
+	}
+	if err != nil {
+		return rsa.RsaKey{PublicKey: "", PrivateKey: ""}, err
+	} else {
+		return keyPair, nil
+	}
+}
+func IslegalRsaError(public string, private string) error {
 	msg := "cored is the core service of super nodes and cloud platforms"
 	//验证加密
 	cipherText, err := rsa.RsaEncryptToBase64([]byte(msg), public)
@@ -50,11 +65,32 @@ func IslegalError(public string, private string) error {
 	if !b {
 		return errors.New("verify error")
 	}
-
+	return nil
+}
+func Sm2IsLegalError(private *sm2.PrivateKey, public *sm2.PublicKey) error {
+	data := "hello,world!"
+	cipher, err := sm2.Encrypt(public, []byte(data), rand.Reader, sm2.C1C2C3)
+	if err != nil {
+		return err
+	}
+	plain, err := sm2.Decrypt(private, cipher, sm2.C1C2C3)
+	if err != nil {
+		return err
+	}
+	if !strings.EqualFold(data, string(plain)) {
+		return err
+	}
+	sign, err := private.Sign(rand.Reader, []byte(data), nil)
+	if err != nil {
+		return err
+	}
+	if !public.Verify([]byte(data), sign) {
+		return err
+	}
 	return nil
 }
 
-// 检查当前目录下的公私钥是否合法
+// Islegal 检查当前目录下的公私钥是否合法
 func Islegal(public string, private string) {
 	msg := "cored is the core service of super nodes and cloud platforms"
 	//验证加密
@@ -84,6 +120,7 @@ func Islegal(public string, private string) {
 		os.Exit(1)
 	}
 }
+
 func Sm2IsLegal(private *sm2.PrivateKey, public *sm2.PublicKey) {
 	data := "hello,world!"
 	cipher, err := sm2.Encrypt(public, []byte(data), rand.Reader, sm2.C1C2C3)

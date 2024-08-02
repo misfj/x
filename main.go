@@ -5,11 +5,14 @@ import (
 	"coredx/client"
 	"coredx/config"
 	"coredx/core"
+	"coredx/core/api/middleware"
 	"coredx/db"
+	"coredx/db/dal/model"
 	"coredx/log"
 	"coredx/store/cache"
 	"coredx/store/ipfs"
 	"coredx/store/minio"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -117,6 +120,7 @@ import (
 //	}
 func init() {
 	config.Init("config.yaml", "private.key", "public.pub")
+
 	//dir := ""
 	//var err error
 	////加载代理程序
@@ -128,6 +132,8 @@ func init() {
 	//exe.Go(filepath.Join(dir, "exe", config.Config.Watertwo.Name), args)
 }
 
+// 生成swagger文档
+// cd  core/api/  && swag init  --parseDependency  -g  .\service\app.go  docs
 func main() {
 	log.Init(config.GetLogging())
 	defer log.Sync()
@@ -135,6 +141,11 @@ func main() {
 	minio.Init(config.GetStore())
 	ipfs.Init(config.GetBack())
 	db.Init(config.GetDb())
+	fmt.Println(model.AppInfoQuery.FindByAppName("数据资产"))
+	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfbmFtZSI6IuS9oOWlveWwj-iJviIsImlzcyI6ImNvcmVkIiwiZXhwIjoxNzMwMjc5MDA0LCJpYXQiOjE3MjI1MDMwMDR9.uGa4MLd_sk8qNejQenkJbvyO6ObruvXg2AZ9hFnzoXk"
+	parseToken, err2 := middleware.ParseToken(token, config.GetJwt().Secret)
+
+	fmt.Println(parseToken.ExpiresAt, err2)
 	client.Init()
 	server := core.New()
 	err := server.Init()
@@ -179,15 +190,5 @@ func main() {
 	cancel()
 	server.Close()
 	server.Wait()
-	//关闭协程加载的水印代理程序
-
-	// interrupt = make(chan os.Signal, 1)
-	// signal.Notify(interrupt,
-	// 	syscall.SIGINT,
-	// 	syscall.SIGTERM,
-	// 	syscall.SIGQUIT)
-
-	// sig = <-interrupt
-	// log.Info("recv signal:", sig)
 
 }

@@ -11,9 +11,20 @@ import (
 func (s *Server) initRoute() {
 	//绑定全局跨域
 	s.eng.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
-	s.eng.Use(middleware.Cors(), middleware.Logger())
-
 	s.eng.POST("/v1/app/login", service.AppLogin)
+	s.eng.Use(middleware.Cors(), middleware.Logger())
+	appG := s.eng.Group("/v1/app")
+	{
+		appG.POST("/register", service.AppRegister)
+		appG.POST("/test", service.AppTest)
+	}
+	authG := appG.Use(middleware.Auth())
+	{
+		authG.POST("/user/register", service.AppUserRegister)
+		authG.POST("/account/bind", service.AppAccountBind)
+		authG.POST("/info", service.AppInfo)
+		authG.POST("/ca", service.AppUserCA)
+	}
 	// s.eng.GET("/api/v1/node/1", ws.NodeService)
 	// x := s.eng.Group("/v1/user")
 	// x.POST("register", service.Register)

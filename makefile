@@ -13,11 +13,14 @@ endif
 .PHONY: all build run clean conf
 all: clean  conf build run
 
+swagger:
+	@echo "Generate  Swagger files ..."
+	@cd  core/api/  && swag init  --parseDependency  -g  service/app.go  docs
 build:
 	@echo "Building $(BINARY_NAME)..."
 	@go build -o $(BINARY_NAME) main.go || exit 1
 
-run: build
+run: swagger build
 	@echo "Running $(BINARY_NAME)..."
 	@./$(BINARY_NAME) || exit 1
 
@@ -29,6 +32,7 @@ clean:
 	rm -f  config.yaml
 	rm -rf .idea/
 	rm  -rf water.log
+	rm  -rf core/api/docs
 
 conf:
 	@echo "Generating $(TARGET_FILE)..."
