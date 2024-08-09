@@ -32,7 +32,10 @@ clean:
 	rm -f  config.yaml
 	rm -rf .idea/
 	rm  -rf water.log
+	rm  -rf ./encrypt-files
+	rm  -rf ./uploads
 	rm  -rf core/api/docs
+
 
 conf:
 	@echo "Generating $(TARGET_FILE)..."
