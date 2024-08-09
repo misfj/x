@@ -27,7 +27,7 @@ type DRApi struct {
 
 func Init() {
 	Client = &client{HttpC: resty.New()}
-	Client.HttpC.SetTimeout(time.Second * 30)
+	Client.HttpC.SetDebug(true).SetHeader("User-Agent", "nwyl-yyds").SetTimeout(time.Second * 30)
 	// var dr DRApi
 	// dr.AuthenticationUrl = fmt.Sprintf("%s/%s", config.DRConfig().EndPoint, config.DRConfig().Authentication)
 	// dr.DelDataUrl = fmt.Sprintf("%s/%s", config.DRConfig().EndPoint, config.DRConfig().DelData)

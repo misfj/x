@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"coredx/log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,7 +8,7 @@ import (
 
 func Cors() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		log.Debug("-------------------进入cors------------------------")
+		//log.Debug("-------------------进入cors------------------------")
 		method := c.Request.Method
 		//origin := c.Request.Header.Get("Origin")
 		c.Header("Access-Control-Allow-Origin", "*")
@@ -24,6 +23,6 @@ func Cors() gin.HandlerFunc {
 		}
 		// 处理请求
 		c.Next()
-		log.Debug("-------------------离开cors------------------------")
+		//log.Debug("-------------------离开cors------------------------")
 	}
 }

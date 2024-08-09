@@ -29,19 +29,23 @@ func Auth() gin.HandlerFunc {
 		if err != nil {
 			log.Error(err)
 			c.JSON(http.StatusOK, gin.H{
-				"status":  403,
-				"message": "no tiken",
+				"code":    http.StatusForbidden,
+				"msg":     "",
+				"message": "no token",
 			})
+			c.Set("jwt_error", err.Error())
 			c.Abort()
-			fmt.Println("are you ok")
 			return
-			//fmt.Println("abort")
-			//return
 		}
-		fmt.Println("are you ok")
 		claim, err := ParseToken(token, config.GetJwt().Secret)
 		if err != nil {
 			log.Error(err)
+			c.JSON(http.StatusOK, gin.H{
+				"code": http.StatusForbidden,
+				"msg":  TokenMalformed.Error(),
+				"data": "",
+			})
+			c.Set("jwt_error", err.Error())
 			c.Abort()
 			return
 		}
@@ -53,37 +57,42 @@ func Auth() gin.HandlerFunc {
 			log.Debug("----------------离开jwt------------------")
 
 		} else if errors.Is(err, jwt.ErrTokenMalformed) {
-			c.JSON(http.StatusForbidden, gin.H{
-				"code":    403,
-				"message": TokenMalformed.Error(),
-				"data":    "",
+			c.JSON(http.StatusOK, gin.H{
+				"code":    http.StatusForbidden,
+				"msg":     "",
+				"message": "no token",
 			})
+			//解决token问题,直接返回。
+			c.Set("jwt_error", err.Error())
 			c.Abort()
 			return
 			// return TokenMalformed
 		} else if errors.Is(err, jwt.ErrTokenExpired) || errors.Is(err, jwt.ErrTokenNotValidYet) {
-			c.JSON(http.StatusForbidden, gin.H{
-				"code":    403,
-				"message": TokenExpired.Error(),
-				"data":    "",
+			c.JSON(http.StatusOK, gin.H{
+				"code": http.StatusForbidden,
+				"msg":  TokenExpired.Error,
+				"data": "",
 			})
+			c.Set("jwt_error", err.Error())
 			c.Abort()
 			return
 
 		} else if errors.Is(err, jwt.ErrTokenSignatureInvalid) {
-			c.JSON(http.StatusForbidden, gin.H{
-				"code":    403,
+			c.JSON(http.StatusOK, gin.H{
+				"code":    http.StatusForbidden,
 				"message": TokenInvalid.Error(),
 				"data":    "",
 			})
+			c.Set("jwt_error", err.Error())
 			c.Abort()
 			return
 		} else {
-			c.JSON(http.StatusForbidden, gin.H{
-				"code":    403,
-				"message": TokenNotValidYet.Error(),
-				"data":    "",
+			c.JSON(http.StatusOK, gin.H{
+				"code": http.StatusForbidden,
+				"msg":  TokenNotValidYet.Error(),
+				"data": "",
 			})
+			c.Set("jwt_error", err.Error())
 			c.Abort()
 			return
 		}

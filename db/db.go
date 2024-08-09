@@ -3,6 +3,7 @@ package db
 import (
 	"coredx/config"
 	"coredx/db/dal/model"
+	"coredx/global"
 	"coredx/log"
 	"fmt"
 	stdlogger "log"
@@ -53,5 +54,35 @@ func Init(conf *config.Db) {
 	model.NewUserCaDao(GDB)
 	model.NewAppTokenDao(GDB)
 	model.NewUserAccountDao(GDB)
+	model.NewDataInfoDao(GDB)
+	model.NewDataDirectDao(GDB)
+	model.NewAppDirectDao(GDB)
+	model.NewServiceInfoDao(GDB)
+	model.NewAppAllowDao(GDB)
+	model.NewDataEncDao(GDB)
+	model.NewUserPdcDao(GDB)
+	model.NewDataSafeDao(GDB)
+	//插入默认的数据
+	model.ServiceInfoQuery.Create(&model.ServiceInfo{
 
+		ServiceName:    "水印服务",
+		ServiceExecDir: "",
+		ServiceVersion: "v1.0.0",
+		ServiceType:    "1",
+		Status:         "1",
+		VisitURL:       "http:0.0.0.0:8081/api/v1/water",
+		Remark:         global.WaterRemark,
+		NodeID:         config.GetNode().NodePrivateMd5,
+	})
+	model.ServiceInfoQuery.Create(&model.ServiceInfo{
+
+		ServiceName:    "AI服务",
+		ServiceExecDir: "",
+		ServiceVersion: "v1.0.0",
+		ServiceType:    "1",
+		Status:         "1",
+		VisitURL:       "http:0.0.0.0:8081/api/v1/ai",
+		Remark:         global.AIRemark,
+		NodeID:         config.GetNode().NodePrivateMd5,
+	})
 }

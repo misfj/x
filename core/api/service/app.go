@@ -189,6 +189,7 @@ func AppUserRegister(c *gin.Context) {
 	}
 	userName := req.UserName
 	nickName := req.NickName
+	password := req.Password
 	userLevel := "0" //最低用户级别
 	userPhone := req.UserPhone
 	//记录用户存储来源
@@ -212,6 +213,7 @@ func AppUserRegister(c *gin.Context) {
 	if err = model.UserInfoQuery.Create(&model.UserInfo{
 		UserName:       userName,
 		NickName:       nickName,
+		Password:       utils.Bcrypt(password),
 		UserLevel:      userLevel,
 		UserPhone:      userPhone,
 		UserSourceType: userSourceType,
@@ -278,10 +280,8 @@ func AppLogin(c *gin.Context) {
 		//查询appID
 		token, err := model.AppTokenQuery.FindByAppID(int(app.ID))
 		if err != nil {
-			log.Debug(err.Error())
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				//创建token 插入数据库 然后返回
-				fmt.Println(1)
 				exp := time.Now().Add(time.Duration(config.GetJwt().Exp) * time.Hour * 24)
 				cusClaim := middleware.BuildClaims(exp, req.AppName)
 				//签发token
@@ -435,8 +435,20 @@ func AppUserCA(c *gin.Context) {
 		response.FailedResponse(c, nil, err.Error())
 		return
 	}
+	//根据用户ID获取用户信息
+	uinfo, err := model.UserInfoQuery.FindByID(uint(uca.UserID))
+	if err != nil {
+		response.FailedResponse(c, nil, err.Error())
+		return
+	}
+	log.Debugf("用户证书:%v\n", uca)
 	dta := response.SingleCA{}
 	err = copier.Copy(&dta, uca)
+	if err != nil {
+		response.FailedResponse(c, nil, err.Error())
+		return
+	}
+	err = copier.Copy(&dta, uinfo)
 	if err != nil {
 		response.FailedResponse(c, nil, err.Error())
 		return

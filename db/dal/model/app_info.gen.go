@@ -49,8 +49,13 @@ type AppInfoDao struct {
 func (info *AppInfoDao) Create(appInfo *AppInfo) error {
 	return info.db.Create(appInfo).Error
 }
-func (info *AppInfoDao) FindByAppName(appName string) (app *AppInfo, err error) {
-	return app, info.db.Where("app_name = ?", appName).First(&app).Error
+func (info *AppInfoDao) FindByAppName(appName string) (*AppInfo, error) {
+	var app AppInfo
+	err := info.db.Model(&AppInfo{}).Where("app_name = ?", appName).First(&app).Error
+	if err != nil {
+		return nil, err
+	}
+	return &app, nil
 }
 func (info *AppInfoDao) VerifyUserPassword(appName string, appPassword string) bool {
 	return info.db.Where("app_name = ?  and password = ?", appName, appPassword).Error == nil
