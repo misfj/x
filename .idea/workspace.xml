@@ -5,38 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="da64098c-f405-4fde-9ddd-8f45205a261f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/client/udp.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/api/service/crypto.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/api/service/platform.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/db/dal/model/app_direct.gen.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/db/dal/model/data_enc.gen.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/global/callback.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/global/constant.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/global/udp.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/store/fs.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/store/localfs/localfs.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/time.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/http.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/http.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/api/middleware/cors.go" beforeDir="false" afterPath="$PROJECT_DIR$/core/api/middleware/cors.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/api/middleware/jwt.go" beforeDir="false" afterPath="$PROJECT_DIR$/core/api/middleware/jwt.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/api/middleware/logger.go" beforeDir="false" afterPath="$PROJECT_DIR$/core/api/middleware/logger.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/api/router.go" beforeDir="false" afterPath="$PROJECT_DIR$/core/api/router.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/api/service/app.go" beforeDir="false" afterPath="$PROJECT_DIR$/core/api/service/app.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/api/service/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/core/api/service/service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/api/v1/app/request/request.go" beforeDir="false" afterPath="$PROJECT_DIR$/core/api/v1/app/request/request.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/api/v1/app/response/response.go" beforeDir="false" afterPath="$PROJECT_DIR$/core/api/v1/app/response/response.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/global/global.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/db/dal/model/app_allow.gen.go" beforeDir="false" afterPath="$PROJECT_DIR$/db/dal/model/app_allow.gen.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db/dal/model/app_info.gen.go" beforeDir="false" afterPath="$PROJECT_DIR$/db/dal/model/app_info.gen.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db/dal/model/data_direct.gen.go" beforeDir="false" afterPath="$PROJECT_DIR$/db/dal/model/data_direct.gen.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db/dal/model/data_info.gen.go" beforeDir="false" afterPath="$PROJECT_DIR$/db/dal/model/data_info.gen.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db/dal/model/data_safe.gen.go" beforeDir="false" afterPath="$PROJECT_DIR$/db/dal/model/data_safe.gen.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db/dal/model/service_info.gen.go" beforeDir="false" afterPath="$PROJECT_DIR$/db/dal/model/service_info.gen.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db/dal/model/user_info.gen.go" beforeDir="false" afterPath="$PROJECT_DIR$/db/dal/model/user_info.gen.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db/dal/model/user_pdc.gen.go" beforeDir="false" afterPath="$PROJECT_DIR$/db/dal/model/user_pdc.gen.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db/db.go" beforeDir="false" afterPath="$PROJECT_DIR$/db/db.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.exe" beforeDir="false" afterPath="$PROJECT_DIR$/main.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/go-install.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/makefile-linux" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/readme.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
