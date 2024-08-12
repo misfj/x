@@ -1,6 +1,7 @@
 package model
 
 import (
+	"coredx/log"
 	"errors"
 	"gorm.io/gorm"
 	"time"
@@ -35,7 +36,9 @@ type UserPdcDao struct {
 func NewUserPdcDao(db *gorm.DB) {
 	UserPdcQuery = &UserPdcDao{db: db}
 }
-
+func (updc *UserPdcDao) CloneDb() *gorm.DB {
+	return updc.db
+}
 func (updc *UserPdcDao) Create(pdc *UserPdc) error {
 	if err := updc.db.Model(&UserInfo{}).Where("user_id = ?", pdc.UserID).First(&UserPdc{}).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -58,13 +61,15 @@ func (updc *UserPdcDao) ExpandCapacity(userID int64, size float64) (*UserPdc, er
 	//todo 在创建用户的时候请补全创建用pdc记录
 	var userPdc UserPdc
 	if err := updc.db.Model(&UserPdc{}).Where("user_id = ?", userID).First(&userPdc).Error; err != nil {
+		log.Error(err)
 		return nil, err
 	}
 	//更新空间
 	userPdc.SpaceAvailable = userPdc.SpaceAvailable + size
 	userPdc.SpaceTotal = userPdc.SpaceTotal + int32(size)
 	userPdc.UpdatedAt = time.Now()
-	if err := updc.db.Model(&UserPdc{}).Save(&userPdc).Error; err != nil {
+	if err := updc.db.Model(&UserPdc{}).Where("user_id = ?", userID).Save(&userPdc).Error; err != nil {
+		log.Error(err)
 		return nil, err
 	}
 	return &userPdc, nil

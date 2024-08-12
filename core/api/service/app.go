@@ -248,6 +248,29 @@ func AppUserRegister(c *gin.Context) {
 		response.FailedResponse(c, nil, err.Error())
 		return
 	}
+	//创建用户pdc 容器空间
+	if err = model.UserPdcQuery.CloneDb().Where("user_id = ?", userID).First(&model.UserPdc{}).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			//创建记录
+			if err = model.UserPdcQuery.CloneDb().Create(&model.UserPdc{
+				UserID: int64(userID),
+				//默认500M
+				SpaceTotal:     1024 * 1024 * 500,
+				SpaceUse:       0,
+				SpaceAvailable: 0,
+				Status:         "1",
+			}).Error; err != nil {
+				log.Error(err.Error())
+				response.FailedResponse(c, nil, err.Error())
+				return
+			}
+		} else {
+			log.Error(err.Error())
+			response.FailedResponse(c, nil, err.Error())
+			return
+		}
+	}
+	model.UserPdcQuery.CloneDb().Where("")
 	response.SuccessResponse(c, did)
 
 }

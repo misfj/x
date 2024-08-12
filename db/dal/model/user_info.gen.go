@@ -1,6 +1,7 @@
 package model
 
 import (
+	"coredx/utils"
 	"errors"
 	"gorm.io/gorm"
 	"time"
@@ -62,25 +63,31 @@ func (info *UserInfoDao) FindUserIDByNickName(nickName string) (uint, error) {
 
 func (info *UserInfoDao) ExistByDID(did string) (uint, bool) {
 	var user UserInfo
-	err := info.db.Where("did =?", did).First(&user).Error
+	err := info.db.Model(&UserInfo{}).Where("did =?", did).First(&user).Error
 	return user.ID, err == nil
 }
 func (info *UserInfoDao) FindByID(id uint) (*UserInfo, error) {
 	var user UserInfo
-	return &user, info.db.Where("id = ?", id).First(&user).Error
+	return &user, info.db.Model(&UserInfo{}).Where("id = ?", id).First(&user).Error
 }
 
 func (info *UserInfoDao) VerifyIDPassword(id uint, password string) (bool, error) {
-	if err := info.db.Where("id  = ? and password = ?", id, password).First(&UserInfo{}).Error; err != nil {
+	if err := info.db.Model(&UserInfo{}).Where("id  = ? and password = ?", id, password).First(&UserInfo{}).Error; err != nil {
 		return true, nil
 	} else {
 		return false, err
 	}
 }
 func (info *UserInfoDao) VerifyDIDPassword(did string, password string) error {
-	if err := info.db.Where("did  =? and password =?", did, password).First(&UserInfo{}).Error; err != nil {
+	var userInfo UserInfo
+	err := info.db.Model(&UserInfo{}).Where("did  =?", did).First(&userInfo).Error
+	if err != nil {
 		return err
-	} else {
+	}
+	verify := utils.BcryptVerify(userInfo.Password, password)
+	if verify {
 		return nil
+	} else {
+		return errors.New("did或者密码不正确")
 	}
 }

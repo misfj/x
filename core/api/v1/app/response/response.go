@@ -80,6 +80,7 @@ type ServiceSubscribeServiceResponse struct {
 }
 
 type ServiceListResponse struct {
+	ID             uint   `json:"id"` //
 	ServiceName    string `json:"service_name"`
 	ServiceVersion string `json:"service_version"`
 	ServiceType    string `json:"service_type"`
@@ -103,8 +104,8 @@ type SingleDataResponse struct {
 }
 
 type SpaceInfoResponse struct {
-	SpaceTotal     string `json:"space_total"`
-	SpaceUse       string `json:"space_use"`
-	SpaceAvailable string `json:"space_available"`
+	SpaceTotal     int64  `json:"space_total"`
+	SpaceUse       int64  `json:"space_use"`
+	SpaceAvailable int64  `json:"space_available"`
 	Status         string `json:"status"`
 }

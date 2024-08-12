@@ -73,8 +73,10 @@ func (s *Server) initRoute() {
 		authG.POST("/data/delete", service.Delete)
 		//请求共享数据
 		authG.POST("/data/share", service.Share)
-		//设置数据共享策略
+		//设置数据安全策略
 		authG.POST("/data/share/rules", service.Rules)
+		//通知数据进行
+		//authG.POST("/data/share/notice", ser)
 
 	}
 }

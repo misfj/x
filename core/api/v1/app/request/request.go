@@ -203,8 +203,8 @@ type DeleteRequest struct {
 	DataID   string `json:"data_id"`
 }
 type ShareRequest struct {
-	AppNameSeller     string `json:"app_name"`
-	AppNameBuyer      string `json:"app_name "`
+	AppNameSeller     string `json:"app_name_seller"`
+	AppNameBuyer      string `json:"app_name_buyer "`
 	DIDSeller         string `json:"did_owner"`
 	DIDBuyer          string `json:"did_peer"`
 	DataID            string `json:"data_id"`

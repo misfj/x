@@ -24,7 +24,7 @@ var (
 
 func Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		log.Debug("----------------进入jwt------------------")
+		//log.Debug("----------------进入jwt------------------")
 		token, err := getJwtFromHeader(c)
 		if err != nil {
 			log.Error(err)
@@ -54,7 +54,7 @@ func Auth() gin.HandlerFunc {
 			log.Debugf("jwt get appName:%s", claim.AppName)
 			//todo 加一层数据库token验证
 			c.Next()
-			log.Debug("----------------离开jwt------------------")
+			//log.Debug("----------------离开jwt------------------")
 
 		} else if errors.Is(err, jwt.ErrTokenMalformed) {
 			c.JSON(http.StatusOK, gin.H{

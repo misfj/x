@@ -46,7 +46,7 @@ func (userAccount *UserAccountDao) Create(userAcccount *UserAccount) error {
 			return err
 		}
 	}
-	return errors.New("数据存在记录")
+	return errors.New("数据存在记录,存在绑定记录")
 }
 
 //func (userAccount *UserAccountDao)

@@ -15,7 +15,8 @@ all: clean  conf build run
 
 swagger:
 	@echo "Generate  Swagger files ..."
-	@cd  core/api/  && swag init  --parseDependency  -g  service/app.go  docs
+	@cd  core/api/  && go install github.com/swaggo/swag/cmd/swag@latest && swag init  --parseDependency  -g  service/app.go  docs
+
 build:
 	@echo "Building $(BINARY_NAME)..."
 	@go build -o $(BINARY_NAME) main.go || exit 1

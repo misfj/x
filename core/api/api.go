@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"coredx/config"
+	"coredx/global"
 	"coredx/log"
 	"crypto/md5"
 	"encoding/hex"
@@ -68,12 +69,19 @@ func (s *Server) Startup(ctx context.Context) (err error) {
 			Addr:    s.config.ListenAddress,
 			Handler: s.eng,
 		}
+		//注册结构体绑定规则
 		//if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		//	err := v.RegisterValidation("TID", req.TID)
 		//	if err != nil {
 		//		return err
 		//	}
 		//}
+		//将路由API routes存放全局,让logger中间件接口使用
+		global.ApiRoutesInfo = s.eng.Routes()
+		global.RouteStrings = make([]string, 0, 10)
+		for _, v := range global.ApiRoutesInfo {
+			global.RouteStrings = append(global.RouteStrings, v.Path)
+		}
 		if err := s.httpServe.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Error(err)
 		}

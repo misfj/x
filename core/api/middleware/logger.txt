@@ -1,0 +1,321 @@
+package middleware
+//switch path {
+//case "/v1/app/test":
+//	//设置默认参数,某些API需要做日志记录,与数据库字段对齐
+//	newCtx.Set("AppName", "test")
+//	//newCtx 有AppName
+//	if appName, ok := newCtx.Value("AppName").(string); ok {
+//
+//		newCtx.Set("res_err", "")
+//		newCtx.Set("app_id", uint(999))
+//		//在日志表有一个服务类别的字段,但是在该url记录成注册接口即可(其他接口正常填智能,数权等服务)
+//		newCtx.Set("service_type", "测试接口")
+//		log.Debugf("取出名称:%s", appName)
+//	}
+//case "/v1/app/account/bind":
+//	if appName, ok := newCtx.Value("AppName").(string); ok {
+//		app, err := model.AppInfoQuery.FindByAppName(appName)
+//		if err != nil {
+//			newCtx.Set("res_err", err.Error())
+//			newCtx.Set("app_id", 0)
+//			newCtx.Set("service_type", "error")
+//		} else {
+//			newCtx.Set("res_err", "")
+//			newCtx.Set("app_id", app.ID)
+//			//在日志表有一个服务类别的字段,但是在该url记录成注册接口即可(其他接口正常填智能,数权等服务)
+//			newCtx.Set("service_type", "业务应用用户账号存储")
+//		}
+//		log.Debugf("取出名称:%s", appName)
+//	}
+//case "/v1/app/register":
+//	if appName, ok := newCtx.Value("AppName").(string); ok {
+//		app, err := model.AppInfoQuery.FindByAppName(appName)
+//		if err != nil {
+//			newCtx.Set("res_err", err.Error())
+//			newCtx.Set("app_id", 0)
+//			newCtx.Set("service_type", "error")
+//		} else {
+//			log.Debugf("根据应用名称查询的应用信息:%v", app)
+//			newCtx.Set("res_err", "")
+//			newCtx.Set("app_id", app.ID)
+//			//在日志表有一个服务类别的字段,但是在该url记录成注册接口即可(其他接口正常填智能,数权等服务)
+//			newCtx.Set("service_type", "业务应用代理用户进行主权账户注册")
+//		}
+//		log.Debugf("取出名称:%s", appName)
+//	}
+//case "/v1/app/user/register":
+//	if appName, ok := newCtx.Value("AppName").(string); ok {
+//		app, err := model.AppInfoQuery.FindByAppName(appName)
+//		if err != nil {
+//			newCtx.Set("res_err", err.Error())
+//			newCtx.Set("app_id", 0)
+//			newCtx.Set("service_type", "error")
+//		} else {
+//			log.Debugf("根据应用名称查询的应用信息:%v", app)
+//			newCtx.Set("res_err", "")
+//			newCtx.Set("app_id", app.ID)
+//			//在日志表有一个服务类别的字段,但是在该url记录成注册接口即可(其他接口正常填智能,数权等服务)
+//			newCtx.Set("service_type", "业务应用代理用户进行主权账户注册")
+//		}
+//		log.Debugf("取出名称:%s", appName)
+//	}
+//case "/v1/app/info":
+//	if appName, ok := newCtx.Value("AppName").(string); ok {
+//		app, err := model.AppInfoQuery.FindByAppName(appName)
+//		if err != nil {
+//			newCtx.Set("res_err", err.Error())
+//			newCtx.Set("app_id", 0)
+//			newCtx.Set("service_type", "error")
+//		} else {
+//			log.Debugf("根据应用名称查询的应用信息:%v", app)
+//			newCtx.Set("res_err", "")
+//			newCtx.Set("app_id", app.ID)
+//			//在日志表有一个服务类别的字段,但是在该url记录成注册接口即可(其他接口正常填智能,数权等服务)
+//			newCtx.Set("service_type", "业务应用代理用户进行主权账户注册")
+//		}
+//		log.Debugf("取出名称:%s", appName)
+//	}
+//case "/v1/app/user/ca":
+//	if appName, ok := newCtx.Value("AppName").(string); ok {
+//		app, err := model.AppInfoQuery.FindByAppName(appName)
+//		if err != nil {
+//			newCtx.Set("res_err", err.Error())
+//			newCtx.Set("app_id", 0)
+//			newCtx.Set("service_type", "error")
+//		} else {
+//			log.Debugf("根据应用名称查询的应用信息:%v", app)
+//			newCtx.Set("res_err", "")
+//			newCtx.Set("app_id", app.ID)
+//			//在日志表有一个服务类别的字段,但是在该url记录成注册接口即可(其他接口正常填智能,数权等服务)
+//			newCtx.Set("service_type", "平台代理用户获取用户证书")
+//		}
+//		log.Debugf("取出名称:%s", appName)
+//	}
+//case "/v1/app/service/data/store":
+//	if appName, ok := newCtx.Value("AppName").(string); ok {
+//		log.Debugf("appName:%s", appName)
+//		app, err := model.AppInfoQuery.FindByAppName(appName)
+//		if err != nil {
+//			log.Debugf("appName:%s", appName)
+//			newCtx.Set("res_err", err.Error())
+//			newCtx.Set("app_id", 0)
+//			newCtx.Set("service_type", "error")
+//		} else {
+//			newCtx.Set("res_err", "")
+//			newCtx.Set("app_id", app.ID)
+//			//在日志表有一个服务类别的字段,但是在该url记录成注册接口即可(其他接口正常填智能,数权等服务)
+//			newCtx.Set("service_type", "业务应用代理用户进行用户数据上传")
+//		}
+//		log.Debugf("取出名称:%s", appName)
+//	}
+//	//todo 这个是系统日志(由于某些特别原因,我们暂时将日志记录放在app_log表里面,
+//	//todo 到时候无法无法解决走协议)
+//case "/v1/app/directory/register":
+//	newCtx.Set("app_id", uint(9999))
+//	newCtx.Set("res_err", "")
+//	newCtx.Set("service_type", "平台自建数据目录")
+//case "/v1/app/service/directory/subscribe":
+//	if appName, ok := newCtx.Value("AppName").(string); ok {
+//		log.Debugf("appName:%s", appName)
+//		app, err := model.AppInfoQuery.FindByAppName(appName)
+//		if err != nil {
+//			log.Debugf("appName:%s", appName)
+//			newCtx.Set("res_err", err.Error())
+//			newCtx.Set("app_id", 0)
+//			newCtx.Set("service_type", "error")
+//		} else {
+//			newCtx.Set("res_err", "")
+//			newCtx.Set("app_id", app.ID)
+//			//在日志表有一个服务类别的字段,但是在该url记录成注册接口即可(其他接口正常填智能,数权等服务)
+//			newCtx.Set("service_type", "业务应用订阅数据目录")
+//		}
+//		log.Debugf("取出名称:%s", appName)
+//	}
+//case "/v1/app/service/list":
+//	if appName, ok := newCtx.Value("AppName").(string); ok {
+//		log.Debugf("appName:%s", appName)
+//		app, err := model.AppInfoQuery.FindByAppName(appName)
+//		if err != nil {
+//			log.Debugf("appName:%s", appName)
+//			newCtx.Set("res_err", err.Error())
+//			newCtx.Set("app_id", 0)
+//			newCtx.Set("service_type", "error")
+//		} else {
+//			newCtx.Set("res_err", "")
+//			newCtx.Set("app_id", app.ID)
+//			//在日志表有一个服务类别的字段,但是在该url记录成注册接口即可(其他接口正常填智能,数权等服务)
+//			newCtx.Set("service_type", "业务应用订阅数据目录")
+//		}
+//		log.Debugf("取出名称:%s", appName)
+//	}
+//case "/v1/app/service/buy":
+//	if appName, ok := newCtx.Value("AppName").(string); ok {
+//		log.Debugf("appName:%s", appName)
+//		app, err := model.AppInfoQuery.FindByAppName(appName)
+//		if err != nil {
+//			log.Debugf("appName:%s", appName)
+//			newCtx.Set("res_err", err.Error())
+//			newCtx.Set("app_id", 0)
+//			newCtx.Set("service_type", "error")
+//		} else {
+//			newCtx.Set("res_err", "")
+//			newCtx.Set("app_id", app.ID)
+//			//在日志表有一个服务类别的字段,但是在该url记录成注册接口即可(其他接口正常填智能,数权等服务)
+//			newCtx.Set("service_type", "业务应用购买服务")
+//		}
+//		log.Debugf("取出名称:%s", appName)
+//	}
+//case "/v1/app/service/data/list":
+//	if appName, ok := newCtx.Value("AppName").(string); ok {
+//		log.Debugf("appName:%s", appName)
+//		app, err := model.AppInfoQuery.FindByAppName(appName)
+//		if err != nil {
+//			log.Debugf("appName:%s", appName)
+//			newCtx.Set("res_err", err.Error())
+//			newCtx.Set("app_id", 0)
+//			newCtx.Set("service_type", "error")
+//		} else {
+//			newCtx.Set("res_err", "")
+//			newCtx.Set("app_id", app.ID)
+//			//在日志表有一个服务类别的字段,但是在该url记录成注册接口即可(其他接口正常填智能,数权等服务)
+//			newCtx.Set("service_type", "业务应用购买服务")
+//		}
+//		log.Debugf("取出名称:%s", appName)
+//	}
+//case "/v1/app/service/cg":
+//	if appName, ok := newCtx.Value("AppName").(string); ok {
+//		log.Debugf("appName:%s", appName)
+//		app, err := model.AppInfoQuery.FindByAppName(appName)
+//		if err != nil {
+//			log.Debugf("appName:%s", appName)
+//			newCtx.Set("res_err", err.Error())
+//			newCtx.Set("app_id", 0)
+//			newCtx.Set("service_type", "error")
+//		} else {
+//			newCtx.Set("res_err", "")
+//			newCtx.Set("app_id", app.ID)
+//			//在日志表有一个服务类别的字段,但是在该url记录成注册接口即可(其他接口正常填智能,数权等服务)
+//			newCtx.Set("service_type", "业务应用购买服务")
+//		}
+//		log.Debugf("取出名称:%s", appName)
+//	}
+//case "/v1/app/service/crypto":
+//	if appName, ok := newCtx.Value("AppName").(string); ok {
+//		log.Debugf("appName:%s", appName)
+//		app, err := model.AppInfoQuery.FindByAppName(appName)
+//		if err != nil {
+//			log.Debugf("appName:%s", appName)
+//			newCtx.Set("res_err", err.Error())
+//			newCtx.Set("app_id", 0)
+//			newCtx.Set("service_type", "error")
+//		} else {
+//			newCtx.Set("res_err", "")
+//			newCtx.Set("app_id", app.ID)
+//			//在日志表有一个服务类别的字段,但是在该url记录成注册接口即可(其他接口正常填智能,数权等服务)
+//			newCtx.Set("service_type", "业务应用购买服务")
+//		}
+//		log.Debugf("取出名称:%s", appName)
+//	}
+//case "/service/data/store2":
+//	if appName, ok := newCtx.Value("AppName").(string); ok {
+//		log.Debugf("appName:%s", appName)
+//		app, err := model.AppInfoQuery.FindByAppName(appName)
+//		if err != nil {
+//			log.Debugf("appName:%s", appName)
+//			newCtx.Set("res_err", err.Error())
+//			newCtx.Set("app_id", 0)
+//			newCtx.Set("service_type", "error")
+//		} else {
+//			newCtx.Set("res_err", "")
+//			newCtx.Set("app_id", app.ID)
+//			//在日志表有一个服务类别的字段,但是在该url记录成注册接口即可(其他接口正常填智能,数权等服务)
+//			newCtx.Set("service_type", "业务应用请求数据存储")
+//		}
+//		log.Debugf("取出名称:%s", appName)
+//	}
+//case "/user/space/info":
+//	if appName, ok := newCtx.Value("AppName").(string); ok {
+//		log.Debugf("appName:%s", appName)
+//		app, err := model.AppInfoQuery.FindByAppName(appName)
+//		if err != nil {
+//			log.Debugf("appName:%s", appName)
+//			newCtx.Set("res_err", err.Error())
+//			newCtx.Set("app_id", 0)
+//			newCtx.Set("service_type", "error")
+//		} else {
+//			newCtx.Set("res_err", "")
+//			newCtx.Set("app_id", app.ID)
+//			//在日志表有一个服务类别的字段,但是在该url记录成注册接口即可(其他接口正常填智能,数权等服务)
+//			newCtx.Set("service_type", "用户升级个人空间")
+//		}
+//		log.Debugf("取出名称:%s", appName)
+//	}
+//case "/data/update":
+//	if appName, ok := newCtx.Value("AppName").(string); ok {
+//		log.Debugf("appName:%s", appName)
+//		app, err := model.AppInfoQuery.FindByAppName(appName)
+//		if err != nil {
+//			log.Debugf("appName:%s", appName)
+//			newCtx.Set("res_err", err.Error())
+//			newCtx.Set("app_id", 0)
+//			newCtx.Set("service_type", "error")
+//		} else {
+//			newCtx.Set("res_err", "")
+//			newCtx.Set("app_id", app.ID)
+//			//在日志表有一个服务类别的字段,但是在该url记录成注册接口即可(其他接口正常填智能,数权等服务)
+//			newCtx.Set("service_type", "请求更新数据文件")
+//		}
+//		log.Debugf("取出名称:%s", appName)
+//	}
+//case "/data/delete":
+//	if appName, ok := newCtx.Value("AppName").(string); ok {
+//		log.Debugf("appName:%s", appName)
+//		app, err := model.AppInfoQuery.FindByAppName(appName)
+//		if err != nil {
+//			log.Debugf("appName:%s", appName)
+//			newCtx.Set("res_err", err.Error())
+//			newCtx.Set("app_id", 0)
+//			newCtx.Set("service_type", "error")
+//		} else {
+//			newCtx.Set("res_err", "")
+//			newCtx.Set("app_id", app.ID)
+//			//在日志表有一个服务类别的字段,但是在该url记录成注册接口即可(其他接口正常填智能,数权等服务)
+//			newCtx.Set("service_type", "请求删除数据文件")
+//		}
+//		log.Debugf("取出名称:%s", appName)
+//	}
+//case "/data/share":
+//	if appName, ok := newCtx.Value("AppName").(string); ok {
+//		log.Debugf("appName:%s", appName)
+//		app, err := model.AppInfoQuery.FindByAppName(appName)
+//		if err != nil {
+//			log.Debugf("appName:%s", appName)
+//			newCtx.Set("res_err", err.Error())
+//			newCtx.Set("app_id", 0)
+//			newCtx.Set("service_type", "error")
+//		} else {
+//			newCtx.Set("res_err", "")
+//			newCtx.Set("app_id", app.ID)
+//			//在日志表有一个服务类别的字段,但是在该url记录成注册接口即可(其他接口正常填智能,数权等服务)
+//			newCtx.Set("service_type", "请求共享数据")
+//		}
+//		log.Debugf("取出名称:%s", appName)
+//	}
+//case "/data/share/rules":
+//	if appName, ok := newCtx.Value("AppName").(string); ok {
+//		log.Debugf("appName:%s", appName)
+//		app, err := model.AppInfoQuery.FindByAppName(appName)
+//		if err != nil {
+//			log.Debugf("appName:%s", appName)
+//			newCtx.Set("res_err", err.Error())
+//			newCtx.Set("app_id", 0)
+//			newCtx.Set("service_type", "error")
+//		} else {
+//			newCtx.Set("res_err", "")
+//			newCtx.Set("app_id", app.ID)
+//			//在日志表有一个服务类别的字段,但是在该url记录成注册接口即可(其他接口正常填智能,数权等服务)
+//			newCtx.Set("service_type", "设置数据安全策略")
+//		}
+//		log.Debugf("取出名称:%s", appName)
+//	}
+//}

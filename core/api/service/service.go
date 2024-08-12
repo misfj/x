@@ -857,9 +857,10 @@ func SpaceInfo(c *gin.Context) {
 		return
 	}
 	//进行密码验证
-	bcrypt := utils.Bcrypt(req.Password)
-	err = model.UserInfoQuery.VerifyDIDPassword(req.DID, bcrypt)
+	//bcrypt := utils.Bcrypt(req.Password)
+	err = model.UserInfoQuery.VerifyDIDPassword(req.DID, req.Password)
 	if err != nil {
+		log.Error(err)
 		response.FailedResponse(c, nil, "密码错误")
 		return
 	}
@@ -869,6 +870,7 @@ func SpaceInfo(c *gin.Context) {
 		response.FailedResponse(c, nil, err.Error())
 		return
 	}
+	log.Debugf("用户pdc:%v\n", pdc)
 	res := response.SpaceInfoResponse{}
 	err = copier.Copy(&res, pdc)
 	if err != nil {
@@ -918,7 +920,7 @@ func Expand(c *gin.Context) {
 // @Param Bear header string true "token"
 // @Param data body request.UpdateRequest true  "业务应用代理用户进行数据更新"
 // @Success   200   {object}  response.Response{data=string}  "业务应用代理用户进行数据更新"
-// @Router    /v1/app/service/update [post]
+// @Router    /v1/app/data/update [post]
 func Update(c *gin.Context) {
 	var req request.UpdateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -972,7 +974,8 @@ func Delete(c *gin.Context) {
 		return
 	}
 	if err := model.DataInfoQuery.CloneDb().Model(&model.DataInfo{}).
-		Where("data_id = ? and user_id = ? ", req.DataID, userID).Delete(&model.DataInfo{}).Error; err != nil {
+		Where("data_id = ? and use_id = ? ", req.DataID, userID).Delete(&model.DataInfo{}).Error; err != nil {
+		log.Error(err)
 		response.FailedResponse(c, nil, err.Error())
 		return
 	}
@@ -988,7 +991,7 @@ func Delete(c *gin.Context) {
 // @Param Bear header string true "token"
 // @Param data body request.ShareRequest true  "数据共享"
 // @Success   200   {object}  response.Response{data=string}  "数据共享"
-// @Router    /v1/app/service/share [post]
+// @Router    /v1/app/data/share [post]
 func Share(c *gin.Context) {
 	var req request.ShareRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -1004,7 +1007,7 @@ func Share(c *gin.Context) {
 		return
 	}
 	var dataInfo model.DataInfo
-	if err := model.DataInfoQuery.CloneDb().Model(&model.DataInfo{}).Where("user_id = ? and data_id = ?", userID, req.DataID).
+	if err := model.DataInfoQuery.CloneDb().Model(&model.DataInfo{}).Where("use_id = ? and data_id = ?", userID, req.DataID).
 		First(&dataInfo).Error; err != nil {
 		log.Error(err)
 		response.FailedResponse(c, nil, err.Error())
@@ -1054,7 +1057,6 @@ func Rules(c *gin.Context) {
 		response.FailedResponse(c, nil, err.Error())
 		return
 	}
-
 	//todo 检查AppName是否存在
 	//获取用户ID
 	userID, b := model.UserInfoQuery.ExistByDID(req.DID)
@@ -1084,4 +1086,8 @@ func Rules(c *gin.Context) {
 			return
 		}
 	}
+}
+
+func Notice(c *gin.Context) {
+
 }
