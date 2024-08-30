@@ -27,7 +27,7 @@ run: swagger build
 
 clean:
 	@echo "Cleaning up..."
-	rm -f $(BINARY_NAME).exe 
+	rm -f $(BINARY_NAME)
 	rm -f public.pub 
 	rm -f private.key 
 	rm -f  config.yaml
