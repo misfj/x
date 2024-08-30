@@ -94,11 +94,11 @@ type ServiceDirectorySubscribeRequest struct {
 //		CallbackUrl   string ` form:"callback_url"`   //数据量太大的时候支持的http回调接口
 //	}
 type ServiceBuyRequest struct {
-	AppName     string ` form:"app_name"`
-	ServiceID   int    ` json:"service_id"`
-	ServiceType string ` json:"service_type"`
-	ServiceExp  int64  ` json:"service_exp"`
-	UseType     string ` json:"use_type"`
+	AppName   string ` form:"app_name"`
+	ServiceID int    ` json:"service_id"`
+	//ServiceType string ` json:"service_type"`
+	ServiceExp int64  ` json:"service_exp"`
+	UseType    string ` json:"use_type"`
 }
 type ServiceListRequest struct {
 	AppName  string ` json:"app_name"`

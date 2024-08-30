@@ -11,6 +11,7 @@ import (
 	"github.com/wumansgy/goEncrypt/aes"
 	"io"
 	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -126,7 +127,9 @@ func (g *global) Start() {
 			if err != nil {
 				errMsg = err.Error()
 			}
-			filer, err := os.Create(v.FileName)
+			filep := filepath.Join("./uploads", v.FileName)
+			filer, err := os.Create(filep)
+			//filer, err := os.Create(v.FileName)
 			if err != nil {
 				log.Error("create file failed, err:", err)
 				continue

@@ -56,6 +56,7 @@ func Init(cfg, privateFile, publicFile string) {
 				os.Exit(1)
 			}
 			utils.Islegal(string(public), string(private))
+
 			publicMd5 := utils.MD5(public)
 			privateMd5 := utils.MD5(private)
 			Config.Node.NodePublicMd5 = publicMd5

@@ -116,7 +116,7 @@ func Upload(c *gin.Context) {
 			log.Debug("数据小于30M")
 			//数据大小小于30M
 
-			dst := filepath.Join(pwd, "uploads", file.Filename)
+			dst := filepath.Join("./uploads", file.Filename)
 			if err = c.SaveUploadedFile(file, dst); err != nil {
 				response.FailedResponse(c, nil, err.Error())
 				return
@@ -148,7 +148,7 @@ func Upload(c *gin.Context) {
 				response.FailedResponse(c, nil, err.Error())
 				return
 			}
-			response.SuccessResponse(c, "success")
+			response.SuccessResponse(c, utils.MD5(fileContent))
 		}
 	}
 	//todo 处理json数据请求
@@ -429,7 +429,6 @@ func Water(c *gin.Context) {
 // @Success   200   {object}  response.Response{data=string}  "业务应用进行授权确权"
 // @Router    /v1/app/service/cg [post]
 func CG(c *gin.Context) {
-	fmt.Println(1111111111)
 	var req request.CgRequest
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
@@ -447,7 +446,6 @@ func CG(c *gin.Context) {
 		if e1 == true && e2 == true {
 			//进行确权
 			if strings.EqualFold(req.Cg, "c") {
-				fmt.Println(1111111111)
 				ownerCa, err := model.UserCaQuery.FindByUserID(ownerUserID)
 				if err != nil {
 					response.FailedResponse(c, nil, "did not exist")
@@ -512,7 +510,6 @@ func CG(c *gin.Context) {
 		if e1 == true && e2 == true {
 			//进行确权
 			if strings.EqualFold(req.Cg, "c") {
-				fmt.Println(1111111111)
 				ownerCa, err := model.UserCaQuery.FindByUserID(ownerUserID)
 				if err != nil {
 					response.FailedResponse(c, nil, "did not exist")

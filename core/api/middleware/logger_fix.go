@@ -3,7 +3,6 @@ package middleware
 import (
 	"coredx/db/dal/model"
 	"coredx/global"
-	"coredx/log"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"strings"
@@ -33,15 +32,7 @@ func in(items []string, item string) bool {
 }
 
 func filter(path string, ctx *gin.Context) error {
-	//for i, jvv := range global.ApiRoutesInfo {
-	//	log.Debug(i, jvv)
-	//}
-	log.Debugf("传入path:%s\n", path)
 
-	//fz := make([]string, 0, 20)
-	//for _, v := range global.ApiRoutesInfo {
-	//	fz = append(fz, v.Path)
-	//}
 	if in(global.RouteStrings, path) {
 		if strings.EqualFold(path, testUrl) {
 			ctx.Set("AppName", "test")
@@ -76,7 +67,7 @@ func filter(path string, ctx *gin.Context) error {
 			}
 		}
 	}
-	log.Debugf("回调path:%s", path)
+	//log.Debugf("回调path:%s", path)
 	return errors.New("no log")
 }
 

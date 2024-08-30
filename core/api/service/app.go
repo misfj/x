@@ -40,9 +40,8 @@ const (
 // @Produce   application/json
 // @Param data body request.AppTestRequest true  "请求参数"
 // @Success   200   {object}  response.Response{data=string}  "测试接口"
-// @Router    /test [post]
+// @Router    /v1/app/test [post]
 func AppTest(c *gin.Context) {
-	log.Debug("come----------------------")
 	var req *request.AppTestRequest
 	err := c.ShouldBindJSON(&req)
 	if err != nil {

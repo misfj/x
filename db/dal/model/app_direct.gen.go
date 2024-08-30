@@ -37,7 +37,7 @@ func NewAppDirectDao(db *gorm.DB) {
 }
 
 func (ad *AppDirectDao) Create(data *AppDirect) error {
-	if err := ad.db.Model(&AppDirect{}).Where("direct_id = ?", data.DirectID).First(&AppDirect{}).Error; err != nil {
+	if err := ad.db.Model(&AppDirect{}).Where("direct_id = ? and  app_id = ?", data.DirectID, data.AppID).First(&AppDirect{}).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return ad.db.Create(data).Error
 		} else {

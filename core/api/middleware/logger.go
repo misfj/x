@@ -20,7 +20,7 @@ func Logger() gin.HandlerFunc {
 		// 请求前
 		t := time.Now()
 		reqPath := c.Request.URL.Path
-		log.Debugf("请求路径:%s", reqPath)
+		//log.Debugf("请求路径:%s", reqPath)
 		method := c.Request.Method
 		ip := c.ClientIP()
 		rawQuery := c.Request.URL.RawQuery
@@ -40,7 +40,6 @@ func Logger() gin.HandlerFunc {
 			c.Request.Body = io.NopCloser(bytes.NewBuffer(requestBody))
 		}
 		log.Info(fmt.Sprintf("host:%s %s %s start", ip, method, reqPath), "query", rawQuery, "body", requestBody)
-		//log.Debugf("请求体:%s", requestBody2)
 		writer := responseBodyWriter{
 			ResponseWriter: c.Writer,
 			body:           &bytes.Buffer{},
@@ -57,7 +56,6 @@ func Logger() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		//log.Debug("-----------------------离开logger-------------------")
 		c.Set("res_msg", writer.body.String())
 		c.Set("res_size", writer.Size())
 		latency := time.Since(t).Microseconds()
@@ -69,12 +67,13 @@ func Logger() gin.HandlerFunc {
 }
 
 func matchLogger(path string, newCtx *gin.Context) (err error) {
-	log.Debugf("进入path:%s", path)
 
 	err = filter(path, newCtx)
 	if err != nil {
 		return
 	}
+
+	//为数据添加上下文
 	appID, _ := newCtx.Get("app_id")
 	serviceType, _ := newCtx.Get("service_type")
 	reqUrl, _ := newCtx.Get("req_url")
